@@ -38,7 +38,7 @@ public class RegistrationScreenFrame {
 	JButton exitButton = null;
 
 	public RegistrationScreenFrame() {
-		System.out.println((new Date()).toString());
+//		System.out.println((new Date()).toString());
 
 		// Создание окна
 		frame = new JFrame("Registration Screen");
@@ -158,10 +158,15 @@ public class RegistrationScreenFrame {
 					newPasswordTextField.getText(),
 					newAddressTextField.getText()
 			);
-			repository.addClientToTable(client);
 
 			frame.dispose();
-			new ClientScreenFrame();
+			if (repository.isExist(client)){
+				System.out.println("Уже есть такой пользователь");
+				new LoginScreenFrame();
+			} else {
+				repository.addClientToTable(client);
+				new ClientScreenFrame();
+			}
 		}
 	}
 

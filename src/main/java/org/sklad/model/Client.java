@@ -5,14 +5,17 @@ import java.util.Objects;
 
 public class Client {
 
-    String name;
-    String phone;
-    String address;
-    String password;
-    ArrayList<Order> orders;
+    public String name;
+    public String phone;
+    public String address;
+    public String password;
+    public ArrayList<Order> orders = new ArrayList<>();
+    public ArrayList<Product> cart = new ArrayList<>();
 
 
-    public Client() {
+    public Client(String name, String password) {
+        this.name = name;
+        this.password = password;
     }
 
     public Client(String name, String password, String address) {
@@ -21,14 +24,18 @@ public class Client {
         this.address = address;
     }
 
-    public boolean isEqualTo(Client anotherClient) {
-        if (!(Objects.equals(name, anotherClient.name))){
+    public boolean isEqualTo(Client anotherClient, boolean usingAddress) {
+        if (!(Objects.equals(name, anotherClient.name)))
             return false;
-        }
-        if (!(Objects.equals(address, anotherClient.address))){
+        if (usingAddress && !(Objects.equals(address, anotherClient.address)))
             return false;
-        }
+        if (!usingAddress && !(Objects.equals(password, anotherClient.password)))
+            return false;
         return true;
+    }
+
+    public void addToCart(Product product){
+        cart.add(product);
     }
 
 }

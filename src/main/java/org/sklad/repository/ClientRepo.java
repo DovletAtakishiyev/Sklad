@@ -8,12 +8,17 @@ public class ClientRepo {
 
     // Adding client to DB
     public void addClientToTable(Client client) {
-        if (!isExists(client)) {
-            db.clients.add(client);
-            setCurrentClient(client);
-        } else {
-            System.out.println("Уже есть такой пользователь");
+        db.clients.add(client);
+        setCurrentClient(client);
+    }
+    // Is client already exists in DB
+    public boolean isExist(Client client) {
+        for (Client dbClient : db.clients) {
+            if (dbClient.isEqualTo(client, true)) {
+                return true;
+            }
         }
+        return false;
     }
 
     // Setting currentClient
@@ -26,10 +31,10 @@ public class ClientRepo {
         return db.currentClient;
     }
 
-    // Is client already exists in DB
-    private boolean isExists(Client client) {
-        for (Client x : db.clients) {
-            if (x.isEqualTo(client)) {
+    public boolean checkCurrentClient(Client client){
+        for (Client dbClient: db.clients) {
+            if (dbClient.isEqualTo(client, false)){
+                setCurrentClient(dbClient);
                 return true;
             }
         }
@@ -41,4 +46,5 @@ public class ClientRepo {
             System.out.println(client);
         }
     }
+
 }

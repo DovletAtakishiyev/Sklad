@@ -1,23 +1,22 @@
 package org.sklad.model;
 
-import java.awt.Image;
-
 public class Product {
 
-	int id;
-	String name;
-	String description;
-	int availableAmount;
-	double pricePerPiece;
-	String imageUrl;
+	public int id;
+	public String name;
+	public String description;
+	public int availableAmount;
+	public double pricePerPiece;
+	public String imageUrl;
+	public boolean visibility = false;
 
 	public Product(
 			int id,
 			String name,
 			String description,
-			String imageUrl,
 			int availableAmount,
-			double pricePerPiece
+			double pricePerPiece,
+			String imageUrl
 	){
 		this.id = id;
 		this.name = name;
@@ -25,5 +24,12 @@ public class Product {
 		this.availableAmount = availableAmount;
 		this.pricePerPiece = pricePerPiece;
 		this.imageUrl = imageUrl;
+	}
+
+	public Product(Product product){
+		this.id = product.id;
+		this.name = product.name;
+		this.pricePerPiece = product.pricePerPiece;
+		this.imageUrl = product.imageUrl;
 	}
 }

@@ -95,7 +95,8 @@ public class ClientScreenFrame {
         ClientRepo repository = new ClientRepo();
         client = repository.getCurrentClient();
 
-        repository.allClients();
+//        repository.allClients();
+//        System.out.println("Current: " + repository.getCurrentClient());
         //------------------------------------------------------------------------//
     }
 

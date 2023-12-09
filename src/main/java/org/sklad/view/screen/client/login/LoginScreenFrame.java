@@ -1,5 +1,7 @@
 package org.sklad.view.screen.client.login;
 
+import org.sklad.model.Client;
+import org.sklad.repository.ClientRepo;
 import org.sklad.view.screen.client.ChoosingRoleFrame;
 import org.sklad.view.screen.client.ClientScreenFrame;
 
@@ -30,7 +32,7 @@ public class LoginScreenFrame {
 	JButton exitButton = null;
 
 	public LoginScreenFrame(){
-		System.out.println((new Date()).toString());
+//		System.out.println((new Date()).toString());
 		
 		// Создание окна
 		frame = new JFrame("Login Screen");
@@ -124,10 +126,23 @@ public class LoginScreenFrame {
 	}
 
 	private void acceptButtonFunction(){
+		ClientRepo repository = new ClientRepo();
+		if (loginTextField.getText().equals("") || loginTextField.getText() == null){
+			System.out.println("Login vvedi dolben!");
+		} else if (passwordTextField.getText().equals("") || (passwordTextField.getText() == null)){
+			System.out.println("Password vvedi dolben!");
+		} else {
+			Client client = new Client(loginTextField.getText(), passwordTextField.getText());
 
+			frame.dispose();
+			if (repository.checkCurrentClient(client)){
+				new ClientScreenFrame();
+			} else {
+				System.out.println("Oshibka!");
+				new LoginScreenFrame();
+			}
 
-		frame.dispose();
-		new ClientScreenFrame();
+		}
 	}
 	
 	private void registrationButtonFunction(){
