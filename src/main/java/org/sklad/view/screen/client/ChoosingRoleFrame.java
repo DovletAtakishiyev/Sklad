@@ -1,4 +1,6 @@
-package org.sklad;
+package org.sklad.view.screen.client;
+import org.sklad.view.screen.client.login.LoginScreenFrame;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

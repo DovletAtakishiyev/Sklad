@@ -1,4 +1,9 @@
-package org.sklad;
+package org.sklad.view.screen.client.login;
+
+import org.sklad.model.Client;
+import org.sklad.repository.ClientRepo;
+import org.sklad.view.screen.client.ChoosingRoleFrame;
+import org.sklad.view.screen.client.ClientScreenFrame;
 
 import java.util.Date;
 
@@ -15,14 +20,19 @@ public class RegistrationScreenFrame {
 	private final int WIDTH = 200;
 	private final int HEIGHT = 400;
 
+	// Login Info
 	JLabel newLoginLabel = null;
 	JTextField newLoginTextField = null;
+	// Password Info
 	JLabel newPasswordLabel = null;
 	JTextField newPasswordTextField = null;
+	// Confirm Password
 	JLabel newPasswordRepeatLabel = null;
 	JTextField newPasswordRepeatTextField = null;
+	// Address Info
 	JLabel newAddressLabel = null;
 	JTextField newAddressTextField = null;
+	// Buttons
 	JButton acceptButton = null;
 	JButton loginScreenButton = null;
 	JButton exitButton = null;
@@ -130,8 +140,29 @@ public class RegistrationScreenFrame {
 	}
 
 	private void acceptButtonFunction(){
-		frame.dispose();
-		new ClientScreenFrame();
+		ClientRepo repository = new ClientRepo();
+		if (newLoginTextField.getText().equals("") || newLoginTextField.getText() == null){
+			System.out.println("Login vvedi dolben!");
+		} else if (newPasswordTextField.getText().equals("") || (newPasswordTextField.getText() == null)){
+			System.out.println("Password vvedi dolben!");
+		} else if (newPasswordRepeatTextField.getText().equals("") || (newPasswordRepeatTextField.getText() == null)){
+			System.out.println("Password Confirm vvedi dolben!");
+		} else if (!newPasswordTextField.getText().equals(newPasswordRepeatTextField.getText())){
+			System.out.println("Dva odinakovyh parolya vvedi dolben!");
+		} else if (newAddressTextField.getText().equals("") || (newAddressTextField.getText() == null)){
+			System.out.println("Address vvedi dolben!");
+		} else{
+			Client client = new Client(
+					newLoginTextField.getText(),
+					newPasswordTextField.getText(),
+					newAddressTextField.getText()
+			);
+			repository.addClientToTable(client);
+			repository.setCurrentClient(client);
+
+			frame.dispose();
+			new ClientScreenFrame();
+		}
 	}
 
 	private void loginScreenButtonFunction(){

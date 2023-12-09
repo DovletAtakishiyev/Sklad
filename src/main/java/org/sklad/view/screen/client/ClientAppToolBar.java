@@ -1,4 +1,4 @@
-package org.sklad;
+package org.sklad.view.screen.client;
 
 import static javax.swing.GroupLayout.Alignment.*;
 import javax.swing.*;

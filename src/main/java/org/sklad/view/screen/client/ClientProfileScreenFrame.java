@@ -1,17 +1,13 @@
-package org.sklad;
+package org.sklad.view.screen.client;
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import static javax.swing.GroupLayout.Alignment.*;
- 
-public class ProfileScreenFrame {
+
+public class ClientProfileScreenFrame {
 	JFrame frame = new JFrame();
 
 	private final int WIDTH = 450;
 	private final int HEIGHT = 200;
 
-	public ProfileScreenFrame() {
+	public ClientProfileScreenFrame() {
 		// Создание окна
 		frame = new JFrame("Choosing Role");
 		frame.setSize(WIDTH, HEIGHT);

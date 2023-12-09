@@ -1,4 +1,4 @@
-package org.sklad;
+package org.sklad.view.screen.client;
 
 import static javax.swing.GroupLayout.Alignment.*;
 import javax.swing.*;
@@ -36,10 +36,13 @@ public class ClientCatalogScreenFrame {
 		// Компоновка элементов
 		JPanel panel1 = new JPanel();
 		panel1.setLayout(new BoxLayout(panel1, BoxLayout.Y_AXIS));
+
+		// TODO(For Each)
 		for(int i = 0; i < 6; i++){
 			panel1.add(new ProductIncatalogProductsPanel().getPanel());
 			panel1.add(Box.createVerticalStrut(5));
 		}
+
 		JScrollPane scrollPane = new JScrollPane(panel1);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -88,10 +91,11 @@ public class ClientCatalogScreenFrame {
 		private JButton addToCartButton = null;
 
 		// Placeholder
-		public ProductIncatalogProductsPanel(){
+		public ProductIncatalogProductsPanel(){	// Default constructor
 			createElements();
 			compose();
 		}
+		// TODO(Esheodinkonstructor)
 
 		private void createElements(){
 			panel = new JPanel();
@@ -120,7 +124,7 @@ public class ClientCatalogScreenFrame {
 			choosedAmountTextField = new JTextField("0");
 			choosedAmountTextField.setColumns(4);
 			choosedAmountTextField.setHorizontalAlignment(JTextField.CENTER);
-			
+
 			priceOfChoosedValueLabel = new JLabel("0");
 			priceOfChoosedValueLabel.setPreferredSize(new Dimension(30, 10));
 
@@ -177,7 +181,7 @@ public class ClientCatalogScreenFrame {
 			l.setVerticalGroup(l.createSequentialGroup()
 				.addComponent(productNameLabel)
 				.addGroup(l.createParallelGroup(CENTER)
-					.addComponent(productImageLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)				
+					.addComponent(productImageLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addComponent(productDescriptionLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGroup(l.createSequentialGroup()
 						.addGroup(l.createParallelGroup()

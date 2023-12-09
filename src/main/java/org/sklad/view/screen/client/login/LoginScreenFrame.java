@@ -1,4 +1,7 @@
-package org.sklad;
+package org.sklad.view.screen.client.login;
+
+import org.sklad.view.screen.client.ChoosingRoleFrame;
+import org.sklad.view.screen.client.ClientScreenFrame;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
@@ -121,12 +124,16 @@ public class LoginScreenFrame {
 	}
 
 	private void acceptButtonFunction(){
+
+
 		frame.dispose();
 		new ClientScreenFrame();
 	}
 	
 	private void registrationButtonFunction(){
 		frame.dispose();
+
+
 		new RegistrationScreenFrame();
 	}
 
