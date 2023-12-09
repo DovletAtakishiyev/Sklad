@@ -1,10 +1,16 @@
 package org.sklad.view.screen.client;
 
 import static javax.swing.GroupLayout.Alignment.*;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class ClientCatalogScreenFrame {
 	private JFrame frame;
@@ -110,10 +116,23 @@ public class ClientCatalogScreenFrame {
 			// productDescriptionLabel.setMaximumSize(new Dimension(500, 100));
 			productDescriptionLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
+			//------------------------------------------------------------------------------------------------//
 			productImageLabel = new JLabel();
 			Image image = Toolkit.getDefaultToolkit().createImage("Images/imagePlaceHolder.png");
 			productImageLabel.setIcon(new ImageIcon(image.getScaledInstance(75, 75, Image.SCALE_SMOOTH)));
 			productImageLabel.setPreferredSize(new Dimension(75, 75));
+
+
+//			productImageLabel = new JLabel();
+//			try {
+//				URL imageURL = new URL("https://i.pinimg.com/236x/4c/56/55/4c5655905340e0face79ff449e912237.jpg");
+//				ImageIcon icon = new ImageIcon(resizeImage(imageURL, 75, 75));
+//				productImageLabel.setIcon(icon);
+//			}catch (Exception e){
+//				System.out.println("Problema s kartinkoy");
+//			}
+//			productImageLabel.setPreferredSize(new Dimension(75, 75));
+			//------------------------------------------------------------------------------------------------//
 
 			availableAmountTextLabel = new JLabel("Available amount: ");
 			availableAmountValuLabel = new JLabel("10");
@@ -139,6 +158,16 @@ public class ClientCatalogScreenFrame {
 
 			addToCartButton = new JButton("Add to cart");
 		}
+		private static Image resizeImage(URL imageUrl, int width, int height) throws IOException {
+			BufferedImage originalImage = ImageIO.read(imageUrl);
+			Image scaledImage = originalImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+			BufferedImage bufferedScaledImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g = bufferedScaledImage.createGraphics();
+			g.drawImage(scaledImage, 0, 0, null);
+			g.dispose();
+			return bufferedScaledImage;
+		}
+
 
 		private void compose(){
 			GroupLayout l = new GroupLayout(panel);

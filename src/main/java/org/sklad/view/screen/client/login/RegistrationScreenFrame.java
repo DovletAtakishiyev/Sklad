@@ -152,13 +152,13 @@ public class RegistrationScreenFrame {
 		} else if (newAddressTextField.getText().equals("") || (newAddressTextField.getText() == null)){
 			System.out.println("Address vvedi dolben!");
 		} else{
+
 			Client client = new Client(
 					newLoginTextField.getText(),
 					newPasswordTextField.getText(),
 					newAddressTextField.getText()
 			);
 			repository.addClientToTable(client);
-			repository.setCurrentClient(client);
 
 			frame.dispose();
 			new ClientScreenFrame();

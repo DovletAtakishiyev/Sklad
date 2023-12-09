@@ -1,7 +1,7 @@
 package org.sklad.view.screen.client;
 
-import org.sklad.db.DB;
 import org.sklad.model.Client;
+import org.sklad.repository.ClientRepo;
 import org.sklad.view.screen.client.login.LoginScreenFrame;
 
 import java.util.Date;
@@ -28,8 +28,6 @@ public class ClientScreenFrame {
 
     public ClientScreenFrame() {
         System.out.println((new Date()).toString());
-
-//        System.out.println(DB.getInstance().clients.get(0));
         // Создание окна
         frame = new JFrame("Client");
         frame.setSize(WIDTH, HEIGHT);
@@ -92,6 +90,13 @@ public class ClientScreenFrame {
                         .addComponent(checkCourierButton)
                         .addComponent(exitButton)
         );
+
+        //------------------------------------------------------------------------//
+        ClientRepo repository = new ClientRepo();
+        client = repository.getCurrentClient();
+
+        repository.allClients();
+        //------------------------------------------------------------------------//
     }
 
     private void useApplicationButtonFunction() {

@@ -9,21 +9,21 @@ public class Product {
 	String description;
 	int availableAmount;
 	double pricePerPiece;
-	Image image;
+	String imageUrl;
 
 	public Product(
 			int id,
 			String name,
 			String description,
+			String imageUrl,
 			int availableAmount,
-			double pricePerPiece,
-			Image image
+			double pricePerPiece
 	){
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.availableAmount = availableAmount;
 		this.pricePerPiece = pricePerPiece;
-		this.image = image;
+		this.imageUrl = imageUrl;
 	}
 }
