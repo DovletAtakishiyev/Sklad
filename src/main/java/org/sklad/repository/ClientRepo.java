@@ -2,6 +2,10 @@ package org.sklad.repository;
 
 import org.sklad.db.DB;
 import org.sklad.model.Client;
+import org.sklad.model.Order;
+import org.sklad.model.Product;
+
+import java.util.Optional;
 
 public class ClientRepo {
     private final DB db = DB.getInstance();
@@ -22,7 +26,7 @@ public class ClientRepo {
     }
 
     // Setting currentClient
-    private void setCurrentClient(Client client) {
+    public void setCurrentClient(Client client) {
         db.currentClient = client;
     }
 
@@ -31,6 +35,7 @@ public class ClientRepo {
         return db.currentClient;
     }
 
+    // Checking client
     public boolean checkCurrentClient(Client client){
         for (Client dbClient: db.clients) {
             if (dbClient.isEqualTo(client, false)){
@@ -41,10 +46,23 @@ public class ClientRepo {
         return false;
     }
 
+    public void removeProductFromCart(Product product){
+        ProductRepo productRepo = new ProductRepo();
+        productRepo.addProduct(product);
+        getCurrentClient().cart.remove(product);
+    }
+
     public void allClients(){
         for (Client client: db.clients) {
             System.out.println(client);
         }
+    }
+
+    public Order getOrderInfo(){
+        return db.orderInfo;
+    }
+    public void setOrderInfo(Order order){
+        db.orderInfo = order;
     }
 
 }

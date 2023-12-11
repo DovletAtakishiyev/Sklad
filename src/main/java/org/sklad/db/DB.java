@@ -1,6 +1,7 @@
 package org.sklad.db;
 
 import org.sklad.model.Client;
+import org.sklad.model.Order;
 import org.sklad.model.Product;
 import org.sklad.util.Constant;
 
@@ -41,5 +42,6 @@ public class DB {
 
     // User
     public Client currentClient;
+    public Order orderInfo;
 
 }

@@ -153,6 +153,9 @@ public class LoginScreenFrame {
 	}
 
 	private void exitButtonFunction(){
+		ClientRepo repo = new ClientRepo();
+		repo.setOrderInfo(null);
+		repo.setCurrentClient(null);
 		frame.dispose();
 		new ChoosingRoleFrame();
 	}

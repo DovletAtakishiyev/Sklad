@@ -4,6 +4,7 @@ import org.sklad.model.Client;
 import org.sklad.model.Product;
 import org.sklad.repository.ClientRepo;
 import org.sklad.repository.ProductRepo;
+import org.sklad.util.Toast;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
@@ -29,6 +30,7 @@ public class ClientCatalogScreenFrame {
     // Инициализация репозиториев
     private ProductRepo productRepository = new ProductRepo();
     private ClientRepo clientRepository = new ClientRepo();
+    private Client currentClient;
 
 
     public ClientCatalogScreenFrame() {
@@ -251,22 +253,17 @@ public class ClientCatalogScreenFrame {
 
             addToCartButton = new JButton("Add to cart");
             addToCartButton.addActionListener(event -> {
-//                System.out.println("Wasap my nigga");
-                Client currentClient = clientRepository.getCurrentClient();
+                currentClient = clientRepository.getCurrentClient();
                 int amount = Integer.parseInt(chosenAmountTextField.getText());
                 if (amount > 0) {
                     Product productIntoCart = new Product(product);
                     productIntoCart.availableAmount = productRepository.takeSomeAmountOfProduct(product, amount);
                     currentClient.addToCart(productIntoCart);
+                    new Toast("Added to Cart", 1000).setVisible(true);
                 }
                 chosenAmountTextField.setText("0");
                 priceOfChosenValueLabel.setText("0.0");
                 availableAmountValueLabel.setText("" + product.availableAmount);
-
-                System.out.println("--------------");
-                for (Product product1:currentClient.cart) {
-                    System.out.println(product1.id + " " + product1.availableAmount);
-                }
             });
         }
 

@@ -29,7 +29,12 @@ public class Product {
 	public Product(Product product){
 		this.id = product.id;
 		this.name = product.name;
+		this.description = product.description;
 		this.pricePerPiece = product.pricePerPiece;
 		this.imageUrl = product.imageUrl;
+	}
+
+	public double calculateTotalPrice(){
+		return availableAmount * pricePerPiece;
 	}
 }

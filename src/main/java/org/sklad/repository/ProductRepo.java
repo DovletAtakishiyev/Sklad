@@ -28,4 +28,20 @@ public class ProductRepo {
         });
         return amount;
     }
+
+    public void addProduct(Product product){
+        Optional<Product> oProduct = db.productsInWarehouse.stream()
+                .filter(element -> element.id == product.id)
+                .findFirst();
+
+        if (oProduct.isEmpty()){
+            System.out.println("There is not such product");
+            db.productsInWarehouse.add(product);
+        } else {
+            System.out.println("There is such product");
+            oProduct.ifPresent(value -> {
+                value.availableAmount += product.availableAmount;
+            });
+        }
+    }
 }

@@ -1,24 +1,27 @@
 package org.sklad.view.screen.client;
 
+import org.sklad.model.Client;
+import org.sklad.model.Order;
+import org.sklad.model.Product;
+import org.sklad.repository.ClientRepo;
+import org.sklad.repository.ProductRepo;
+import org.sklad.util.OrderStatus;
+import org.sklad.util.Toast;
+
 import static javax.swing.GroupLayout.Alignment.*;
 
-import javax.swing.JFrame;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class ClientCartScreenFrame {
@@ -33,7 +36,31 @@ public class ClientCartScreenFrame {
 
     private JPanel orderingPanel = null;
 
+    private ClientRepo clientRepository;
+    private ProductRepo productRepository;
+    private Order cartOrder;
+    private Client currentClient;
+
     public ClientCartScreenFrame() {
+        // Добавим то что нам нужно
+        clientRepository = new ClientRepo();
+        productRepository = new ProductRepo();
+        currentClient = clientRepository.getCurrentClient();
+        cartOrder = clientRepository.getOrderInfo();
+        if (cartOrder == null){
+            clientRepository.setOrderInfo(cartOrder = new Order(
+                    currentClient.name,
+                    currentClient.phone,
+                    currentClient.address,
+                    "",
+                    OrderStatus.IN_CART,
+                    new ArrayList<>()
+            ));
+
+        }
+
+
+
         // Создание окна
         frame = new JFrame("Client cart");
         frame.setSize(WIDTH, HEIGHT);
@@ -56,10 +83,18 @@ public class ClientCartScreenFrame {
         // Компоновка элементов
         JPanel panel1 = new JPanel();
         panel1.setLayout(new BoxLayout(panel1, BoxLayout.Y_AXIS));
-        for (int i = 0; i < 20; i++) {
-            panel1.add(new ProductInCartPanel().getPanel());
+
+//        for (int i = 0; i < 20; i++) {
+//            panel1.add(new ProductInCartPanel().getPanel());
+//            panel1.add(Box.createVerticalStrut(5));
+//        }
+
+        for (Product product : currentClient.cart) {
+            panel1.add(new ProductInCartPanel(product).getPanel());
             panel1.add(Box.createVerticalStrut(5));
         }
+
+
         JScrollPane scrollPane = new JScrollPane(panel1);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -107,7 +142,7 @@ public class ClientCartScreenFrame {
         private JLabel addressLabel = null;
         private JTextField addressTextField = null;
         private JLabel deliveringDateLabel = null;
-        private JTextField deliveringDatextField = null;
+        private JTextField deliveringDateTextField = null;
         private JButton makeOrderButton = null;
 
         public OrderingPanel() {
@@ -116,30 +151,88 @@ public class ClientCartScreenFrame {
             panel.setSize(100, 100);
             panel.setPreferredSize(new Dimension(250, 370));
             panel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 3));
+
+            // Delivery Name
             nameLabel = new JLabel("Name:");
             nameTextField = new JTextField(15);
-            phoneNumberLabel = new JLabel("Phone:");
-            phoneNumberTextField = new JTextField(15);
-            addressLabel = new JLabel("Address:");
-            addressTextField = new JTextField(15);
-            deliveringDateLabel = new JLabel("Date to deliver:");
-            deliveringDatextField = new JTextField(15);
-
-            makeOrderButton = new JButton("Make order");
-
-            makeOrderButton.addActionListener(new ActionListener() {
+            if (cartOrder.deliveryName != null)
+                nameTextField.setText(cartOrder.deliveryName);
+            nameTextField.addKeyListener(new KeyListener() {
                 @Override
-                public void actionPerformed(ActionEvent e) {
-                    makeOrderButtonFunction();
+                public void keyTyped(KeyEvent e) {
+                }
+
+                @Override
+                public void keyPressed(KeyEvent e) {
+                }
+
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    cartOrder.deliveryName = nameTextField.getText();
                 }
             });
+
+            // Delivery phone number
+            phoneNumberLabel = new JLabel("Phone:");
+            phoneNumberTextField = new JTextField(15);
+            if (cartOrder.deliveryPhone != null) {
+                phoneNumberTextField.setText(cartOrder.deliveryPhone);
+            }
+            phoneNumberTextField.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent e) {
+                }
+
+                @Override
+                public void keyPressed(KeyEvent e) {
+                }
+
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    cartOrder.deliveryPhone = phoneNumberTextField.getText();
+                }
+            });
+
+            // Delivery address
+            addressLabel = new JLabel("Address:");
+            addressTextField = new JTextField(15);
+            addressTextField.setText(cartOrder.deliveryAddress);
+            addressTextField.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent e) {}
+                @Override
+                public void keyPressed(KeyEvent e) {}
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    cartOrder.deliveryAddress = addressTextField.getText();
+                }
+            });
+
+            // Delivery date
+            deliveringDateLabel = new JLabel("Date to deliver:");
+            deliveringDateTextField = new JTextField(15);
+            if (cartOrder.deliveryDate != null) {
+                deliveringDateTextField.setText(cartOrder.deliveryDate);
+            }
+            deliveringDateTextField.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent e) {}
+                @Override
+                public void keyPressed(KeyEvent e) {}
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    // TODO(ADD DATE CONVERTER)
+                    cartOrder.deliveryDate = deliveringDateTextField.getText();
+                }
+            });
+
+            makeOrderButton = new JButton("Make order");
+            makeOrderButton.addActionListener(e -> makeOrderButtonFunction());
 
             JPanel panel2 = new JPanel();
             panel.add(panel2);
             GroupLayout oLayout = new GroupLayout(panel2);
             panel2.setLayout(oLayout);
-            // oLayout.setAutoCreateGaps(true);
-            // oLayout.setAutoCreateContainerGaps(true);
 
             oLayout.setHorizontalGroup(oLayout.createParallelGroup(CENTER)
                     .addComponent(nameLabel)
@@ -149,7 +242,7 @@ public class ClientCartScreenFrame {
                     .addComponent(addressLabel)
                     .addComponent(addressTextField)
                     .addComponent(deliveringDateLabel)
-                    .addComponent(deliveringDatextField)
+                    .addComponent(deliveringDateTextField)
                     .addComponent(makeOrderButton)
             );
 
@@ -163,14 +256,27 @@ public class ClientCartScreenFrame {
                             .addComponent(addressLabel)
                             .addComponent(addressTextField)
                             .addComponent(deliveringDateLabel)
-                            .addComponent(deliveringDatextField)
+                            .addComponent(deliveringDateTextField)
                             .addComponent(makeOrderButton)
                     )
             );
         }
 
         private void makeOrderButtonFunction() {
-
+            if (!cartOrder.checkValidity()){
+                new Toast("Fill required fields", 1000).setVisible(true);
+            } else if (currentClient.cart.isEmpty()){
+                new Toast("Nothing to add", 1000).setVisible(true);
+            } else {
+                cartOrder.deliveryProducts = new ArrayList<>(currentClient.cart);
+                cartOrder.deliveryStatus = OrderStatus.READY_TO_DELIVER;
+                currentClient.orders.add(cartOrder);
+                currentClient.cart = new ArrayList<>();
+                clientRepository.setOrderInfo(null);
+                frame.dispose();
+                new ClientCartScreenFrame();
+                new Toast("Order was Made", 1000).setVisible(true);
+            }
         }
 
         public JPanel getPanel() {
@@ -219,9 +325,50 @@ public class ClientCartScreenFrame {
             removeButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    removeButtonFunction();
+//                    removeButtonFunction();
                 }
             });
+
+            compose();
+        }
+
+        public ProductInCartPanel(Product product) {                   // Вот тут сама карточка
+            panel = new JPanel();
+            panel.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 3));
+
+            // Name
+            productNameLabel = new JLabel(product.name);
+
+            // Description
+            productDescriptionLabel = new JLabel("suita " + product.description);
+            productDescriptionLabel.setMinimumSize(new Dimension(150, 75));
+            productDescriptionLabel.setPreferredSize(new Dimension(300, 75));
+            productDescriptionLabel.setMaximumSize(new Dimension(450, 75));
+            productDescriptionLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+            // Image
+            productImageLabel = new JLabel();                                   // Image Url
+            try {
+                URL imageURL = new URL(product.imageUrl);
+                ImageIcon icon = new ImageIcon(resizeImage(imageURL));
+                productImageLabel.setIcon(icon);
+            } catch (Exception e) {
+                Image image = Toolkit.getDefaultToolkit().createImage("Images/imagePlaceHolder.png");
+                productImageLabel.setIcon(new ImageIcon(image.getScaledInstance(75, 75, Image.SCALE_SMOOTH)));
+                System.out.println("Проблема с картинкой");
+            }
+            productImageLabel.setPreferredSize(new Dimension(75, 75));
+
+            // Amount
+            amountTextLabel = new JLabel("Amount:");
+            amountValueLabel = new JLabel("" + product.availableAmount);
+
+            // Price
+            priceTextLabel = new JLabel("Price:");
+            priceValueLabel = new JLabel("" + product.calculateTotalPrice());
+
+            removeButton = new JButton("Remove");
+            removeButton.addActionListener(event -> removeButtonFunction(product));
 
             compose();
         }
@@ -269,13 +416,28 @@ public class ClientCartScreenFrame {
             );
         }
 
-        private void removeButtonFunction() {
+        private void removeButtonFunction(Product product) {
+            // Убираем из корзины клиента
+            // Если товара на складе нет, то добавляем обратно
+            // Если товар есть, то просто прибавляем amount
+            new Toast("Product removed from cart", 1000).setVisible(true);
+            clientRepository.removeProductFromCart(product);
+            frame.dispose();
+            new ClientCartScreenFrame();
+        }
 
+        private static Image resizeImage(URL imageUrl) throws IOException {
+            BufferedImage originalImage = ImageIO.read(imageUrl);
+            Image scaledImage = originalImage.getScaledInstance(75, 75, Image.SCALE_SMOOTH);
+            BufferedImage bufferedScaledImage = new BufferedImage(75, 75, BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = bufferedScaledImage.createGraphics();
+            g.drawImage(scaledImage, 0, 0, null);
+            g.dispose();
+            return bufferedScaledImage;
         }
 
         public JPanel getPanel() {
             return panel;
         }
     }
-
 }
