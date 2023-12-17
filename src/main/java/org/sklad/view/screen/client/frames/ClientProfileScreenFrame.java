@@ -1,4 +1,4 @@
-package org.sklad.view.screen.client;
+package org.sklad.view.screen.client.frames;
 import javax.swing.*;
 
 public class ClientProfileScreenFrame {

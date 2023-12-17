@@ -1,7 +1,12 @@
-package org.sklad.view.screen.client;
+package org.sklad.view.screen.client.frames;
 
 import org.sklad.model.Client;
+import org.sklad.model.Order;
+import org.sklad.model.Package;
 import org.sklad.repository.ClientRepo;
+import org.sklad.repository.ManagerRepo;
+import org.sklad.view.screen.client.courier.ThereIsCourierScreenFrame;
+import org.sklad.view.screen.client.courier.ThereIsNoCourierScreenFrame;
 import org.sklad.view.screen.client.login.LoginScreenFrame;
 
 import java.util.Date;
@@ -12,6 +17,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class ClientScreenFrame {
 
@@ -25,9 +31,18 @@ public class ClientScreenFrame {
     JButton useApplicationButton = null;
     JButton checkCourierButton = null;
     JButton exitButton = null;
+    ManagerRepo managerRepo;
+    ClientRepo clientRepo;
+    Client currentClient;
+    Package currentPackage;
+
 
     public ClientScreenFrame() {
-        System.out.println((new Date()).toString());
+        managerRepo = new ManagerRepo();
+        clientRepo = new ClientRepo();
+        currentClient = clientRepo.getCurrentClient();
+        currentPackage = managerRepo.getCurrentPackage();
+
         // Создание окна
         frame = new JFrame("Client");
         frame.setSize(WIDTH, HEIGHT);
@@ -90,14 +105,6 @@ public class ClientScreenFrame {
                         .addComponent(checkCourierButton)
                         .addComponent(exitButton)
         );
-
-        //------------------------------------------------------------------------//
-        ClientRepo repository = new ClientRepo();
-        client = repository.getCurrentClient();
-
-//        repository.allClients();
-//        System.out.println("Current: " + repository.getCurrentClient());
-        //------------------------------------------------------------------------//
     }
 
     private void useApplicationButtonFunction() {
@@ -106,10 +113,23 @@ public class ClientScreenFrame {
     }
 
     private void checkCourierButtonFunction() {
-
+        if (currentPackage != null){
+            for (Order order: currentClient.orders) {
+                if (Objects.equals(order.deliveryAddress, currentPackage.getCurrentAddress())){
+                    frame.dispose();
+                    new ThereIsCourierScreenFrame();
+                    return;
+                }
+            }
+        }
+        frame.dispose();
+        new ThereIsNoCourierScreenFrame();
     }
 
     private void exitButtonFunction() {
+        ClientRepo repo = new ClientRepo();
+        repo.setOrderInfo(null);
+        repo.setCurrentClient(null);
         frame.dispose();
         new LoginScreenFrame();
     }

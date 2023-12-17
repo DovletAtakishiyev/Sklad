@@ -2,12 +2,11 @@ package org.sklad.view.screen.client.login;
 
 import org.sklad.model.Client;
 import org.sklad.repository.ClientRepo;
-import org.sklad.view.screen.client.ChoosingRoleFrame;
-import org.sklad.view.screen.client.ClientScreenFrame;
+import org.sklad.view.screen.ChoosingRoleFrame;
+import org.sklad.view.screen.client.frames.ClientScreenFrame;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
-import java.util.Date;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -32,8 +31,6 @@ public class LoginScreenFrame {
 	JButton exitButton = null;
 
 	public LoginScreenFrame(){
-//		System.out.println((new Date()).toString());
-		
 		// Создание окна
 		frame = new JFrame("Login Screen");
         frame.setSize(WIDTH,HEIGHT);
@@ -134,6 +131,7 @@ public class LoginScreenFrame {
 		} else {
 			Client client = new Client(loginTextField.getText(), passwordTextField.getText());
 
+
 			frame.dispose();
 			if (repository.checkCurrentClient(client)){
 				new ClientScreenFrame();
@@ -147,8 +145,6 @@ public class LoginScreenFrame {
 	
 	private void registrationButtonFunction(){
 		frame.dispose();
-
-
 		new RegistrationScreenFrame();
 	}
 

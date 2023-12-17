@@ -2,10 +2,8 @@ package org.sklad.view.screen.client.login;
 
 import org.sklad.model.Client;
 import org.sklad.repository.ClientRepo;
-import org.sklad.view.screen.client.ChoosingRoleFrame;
-import org.sklad.view.screen.client.ClientScreenFrame;
-
-import java.util.Date;
+import org.sklad.view.screen.ChoosingRoleFrame;
+import org.sklad.view.screen.client.frames.ClientScreenFrame;
 
 import static javax.swing.GroupLayout.Alignment.*;
 import javax.swing.*;
@@ -38,8 +36,6 @@ public class RegistrationScreenFrame {
 	JButton exitButton = null;
 
 	public RegistrationScreenFrame() {
-//		System.out.println((new Date()).toString());
-
 		// Создание окна
 		frame = new JFrame("Registration Screen");
 		frame.setSize(WIDTH, HEIGHT);
@@ -164,6 +160,7 @@ public class RegistrationScreenFrame {
 				System.out.println("Уже есть такой пользователь");
 				new LoginScreenFrame();
 			} else {
+//				repository.setCurrentClient(client);
 				repository.addClientToTable(client);
 				new ClientScreenFrame();
 			}
@@ -176,9 +173,6 @@ public class RegistrationScreenFrame {
 	}
 
 	private void exitButtonFunction(){
-		ClientRepo repo = new ClientRepo();
-		repo.setOrderInfo(null);
-		repo.setCurrentClient(null);
 		frame.dispose();
 		new ChoosingRoleFrame();
 	}

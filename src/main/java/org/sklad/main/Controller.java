@@ -1,8 +1,6 @@
 package org.sklad.main;
 
-import org.sklad.view.screen.client.ChoosingRoleFrame;
-import org.sklad.view.screen.client.ClientCatalogScreenFrame;
-import org.sklad.view.screen.client.ClientOrdersScreenFrame;
+import org.sklad.view.screen.ChoosingRoleFrame;
 
 public class Controller {
 

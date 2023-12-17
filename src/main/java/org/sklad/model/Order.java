@@ -1,17 +1,17 @@
 package org.sklad.model;
 
-import org.sklad.util.OrderStatus;
-
 import java.util.ArrayList;
 
 public class Order {
-
+    private int id;
     public String deliveryName;
     public String deliveryPhone;
     public String deliveryAddress;
     public String deliveryDate;
     public OrderStatus deliveryStatus;
     public ArrayList<Product> deliveryProducts;
+
+    private static int counter = 0;
 
     public Order(
             String name,
@@ -37,6 +37,7 @@ public class Order {
         deliveryDate = anotherOrder.deliveryDate;
         deliveryStatus = anotherOrder.deliveryStatus;
         deliveryProducts = new ArrayList<>(anotherOrder.deliveryProducts);
+        id = anotherOrder.getId();
     }
 
     public double calculateTotalPrice(){
@@ -58,5 +59,18 @@ public class Order {
         if (deliveryDate == null || deliveryDate.isBlank())
             return false;
         return true;
+    }
+
+    public int getId(){
+        return id;
+    }
+
+    public void setId(int id){
+        this.id = id;
+    }
+
+    public static int provideId(){
+        counter++;
+        return counter;
     }
 }

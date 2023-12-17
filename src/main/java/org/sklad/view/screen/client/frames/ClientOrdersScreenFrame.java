@@ -1,10 +1,13 @@
-package org.sklad.view.screen.client;
+package org.sklad.view.screen.client.frames;
 
 import org.sklad.model.Client;
 import org.sklad.model.Order;
+import org.sklad.model.OrderStatus;
 import org.sklad.model.Product;
 import org.sklad.repository.ClientRepo;
+import org.sklad.util.Toast;
 import org.sklad.util.Utils;
+import org.sklad.view.screen.client.toolbar.ClientAppToolBar;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
@@ -150,7 +153,7 @@ public class ClientOrdersScreenFrame {
 		private void createElements(Order order){
 			panel = new JPanel();
 			panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-			orderIdLabel = new JLabel("order id placeholder");
+			orderIdLabel = new JLabel("order id : " + order.getId());
 			orderIdLabel.setFont(anotherFont);
 
 			productsPanel = new JPanel();
@@ -458,6 +461,15 @@ public class ClientOrdersScreenFrame {
 				orderStatusValueLabel = new JLabel(Utils.getStatus(order));
 
 				cancelOrderButton = new JButton("Cancel order");
+				if (order.deliveryStatus == OrderStatus.CANCELED || order.deliveryStatus == OrderStatus.DELIVERED){
+					cancelOrderButton.setEnabled(false);
+				}
+				cancelOrderButton.addActionListener(event -> {
+					clientRepository.removeOrder(order);
+					frame.dispose();
+					new ClientOrdersScreenFrame();
+					Toast.show("Order Canceled");
+				});
 			}
 
 			private void compose(){

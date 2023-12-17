@@ -1,4 +1,6 @@
-package org.sklad.view.screen.client;
+package org.sklad.view.screen.client.toolbar;
+
+import org.sklad.view.screen.client.frames.*;
 
 import static javax.swing.GroupLayout.Alignment.*;
 import javax.swing.*;
@@ -124,7 +126,10 @@ public class ClientAppToolBar {
 	}
 
 	private void profileScreenButtonFunction(){
-
+		if(!(frame.getTitle().equals("Profile"))){
+			new ProfileScreenFrame();
+			frame.dispose();
+		}
 	}
 
 	private void exitButtonFunction(){

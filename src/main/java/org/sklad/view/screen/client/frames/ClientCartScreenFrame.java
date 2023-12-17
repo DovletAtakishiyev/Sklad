@@ -1,12 +1,14 @@
-package org.sklad.view.screen.client;
+package org.sklad.view.screen.client.frames;
 
 import org.sklad.model.Client;
 import org.sklad.model.Order;
 import org.sklad.model.Product;
 import org.sklad.repository.ClientRepo;
 import org.sklad.repository.ProductRepo;
-import org.sklad.util.OrderStatus;
+import org.sklad.model.OrderStatus;
 import org.sklad.util.Toast;
+import org.sklad.util.Utils;
+import org.sklad.view.screen.client.toolbar.ClientAppToolBar;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
@@ -52,14 +54,12 @@ public class ClientCartScreenFrame {
                     currentClient.name,
                     currentClient.phone,
                     currentClient.address,
-                    "",
+                    Utils.getCurrentDate(),
                     OrderStatus.IN_CART,
                     new ArrayList<>()
             ));
 
         }
-
-
 
         // Создание окна
         frame = new JFrame("Client cart");
@@ -264,18 +264,28 @@ public class ClientCartScreenFrame {
 
         private void makeOrderButtonFunction() {
             if (!cartOrder.checkValidity()){
-                new Toast("Fill required fields", 1000).setVisible(true);
+                Toast.show("Fill required fields");
             } else if (currentClient.cart.isEmpty()){
-                new Toast("Nothing to add", 1000).setVisible(true);
+                Toast.show("Nothing to add");
             } else {
-                cartOrder.deliveryProducts = new ArrayList<>(currentClient.cart);
-                cartOrder.deliveryStatus = OrderStatus.READY_TO_DELIVER;
-                currentClient.orders.add(cartOrder);
-                currentClient.cart = new ArrayList<>();
-                clientRepository.setOrderInfo(null);
-                frame.dispose();
-                new ClientCartScreenFrame();
-                new Toast("Order was Made", 1000).setVisible(true);
+                if (Utils.isValidDateFormat(cartOrder.deliveryDate)){
+                    cartOrder.deliveryProducts = new ArrayList<>(currentClient.cart);
+                    //------------------------------------------------------------//
+//                    cartOrder.deliveryStatus = OrderStatus.IN_PROCESS;
+                    cartOrder.deliveryStatus = OrderStatus.IN_PROCESS;
+                    //------------------------------------------------------------//
+                    cartOrder.setId(Order.provideId());
+                    currentClient.orders.add(cartOrder);
+                    currentClient.cart = new ArrayList<>();
+                    clientRepository.setOrderInfo(null);
+                    frame.dispose();
+                    new ClientCartScreenFrame();
+                    Toast.show("Order was made");
+                } else {
+                    deliveringDateTextField.setText("");
+                    Toast.show("Wrong date format (dd/MM/yyyy)");
+                }
+
             }
         }
 
@@ -420,7 +430,7 @@ public class ClientCartScreenFrame {
             // Убираем из корзины клиента
             // Если товара на складе нет, то добавляем обратно
             // Если товар есть, то просто прибавляем amount
-            new Toast("Product removed from cart", 1000).setVisible(true);
+            Toast.show("Product removed from cart");
             clientRepository.removeProductFromCart(product);
             frame.dispose();
             new ClientCartScreenFrame();

@@ -2,15 +2,13 @@ package org.sklad.util;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import java.awt.event.*;
 
 
 public class Toast extends JDialog {
-    int miliseconds;
-    public Toast(String toastString, int time) {
-        this.miliseconds = time;
+    int milliseconds;
+    Toast(String toastString, int time) {
+        this.milliseconds = time;
         setUndecorated(true);
         getContentPane().setLayout(new BorderLayout(0, 0));
 
@@ -38,12 +36,16 @@ public class Toast extends JDialog {
         new Thread(){
             public void run() {
                 try {
-                    Thread.sleep(miliseconds);
+                    Thread.sleep(milliseconds);
                     dispose();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }.start();
+    }
+
+    public static void show(String message){
+        new Toast(message, 1000).setVisible(true);
     }
 }

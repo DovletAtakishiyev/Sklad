@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class Client {
 
+    public int id;
     public String name;
     public String phone;
     public String address;
@@ -36,6 +37,20 @@ public class Client {
 
     public void addToCart(Product product){
         cart.add(product);
+    }
+
+    public void updateData(Client client){
+        this.name = client.name;
+        this.address = client.address;
+        this.password = client.password;
+        this.phone = client.phone;
+        this.cart = new ArrayList<>(client.cart);
+        this.orders = new ArrayList<>(client.orders);
+    }
+    public void updateData(ArrayList<String> newData){
+        this.name = newData.get(0);
+        this.phone = newData.get(1);
+        this.address = newData.get(2);
     }
 
 }

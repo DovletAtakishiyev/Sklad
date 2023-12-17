@@ -22,7 +22,7 @@ public class ProductRepo {
         oProduct.ifPresent(value -> {
             value.availableAmount -= amount;
             if (value.availableAmount == 0){
-                System.out.println("suita");
+//
                 db.productsInWarehouse.remove(value);
             }
         });

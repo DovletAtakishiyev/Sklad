@@ -1,10 +1,11 @@
-package org.sklad.view.screen.client;
+package org.sklad.view.screen.client.frames;
 
 import org.sklad.model.Client;
 import org.sklad.model.Product;
 import org.sklad.repository.ClientRepo;
 import org.sklad.repository.ProductRepo;
 import org.sklad.util.Toast;
+import org.sklad.view.screen.client.toolbar.ClientAppToolBar;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
@@ -17,7 +18,6 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Objects;
 
 public class ClientCatalogScreenFrame {
     private JFrame frame;
@@ -259,7 +259,7 @@ public class ClientCatalogScreenFrame {
                     Product productIntoCart = new Product(product);
                     productIntoCart.availableAmount = productRepository.takeSomeAmountOfProduct(product, amount);
                     currentClient.addToCart(productIntoCart);
-                    new Toast("Added to Cart", 1000).setVisible(true);
+                    Toast.show("Added to Cart");
                 }
                 chosenAmountTextField.setText("0");
                 priceOfChosenValueLabel.setText("0.0");
