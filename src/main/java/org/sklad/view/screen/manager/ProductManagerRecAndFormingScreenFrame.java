@@ -1,9 +1,16 @@
 package org.sklad.view.screen.manager;
 
+import org.sklad.model.ClientOrder;
+import org.sklad.model.OrderStatus;
+import org.sklad.model.Product;
+import org.sklad.repository.ManagerRepo;
+import org.sklad.util.Toast;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
@@ -19,14 +26,18 @@ public class ProductManagerRecAndFormingScreenFrame {
 
     private Font anotherFont = new Font("Verdana", Font.BOLD, 12);
     private Font titleFont = new Font("Verdana", Font.BOLD, 16);
+    private ManagerRepo managerRepo;
+    private ArrayList<ClientOrder> formedOrders;
 
     public ProductManagerRecAndFormingScreenFrame(){
+        managerRepo = new ManagerRepo();
+        formedOrders = managerRepo.getOrdersBy(true);
         createElements();
         compose();
     }
 
     private void createElements(){
-        frame = new JFrame("Providers");
+        frame = new JFrame("Receiving and Forming Packages");
         frame.setSize(WIDTH,HEIGHT);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
@@ -37,7 +48,6 @@ public class ProductManagerRecAndFormingScreenFrame {
         productManagerToolBarPanel = new ProductManagerAppToolBarPanel(frame).getPanel();
 
         mainPanel = new MainPanel().getPanel();
-        // mainPanel.add(scrollPane);
     }
 
     private void compose(){
@@ -124,7 +134,7 @@ public class ProductManagerRecAndFormingScreenFrame {
                 panel.setPreferredSize(new Dimension(732, 285));
                 panel.setBorder(BorderFactory.createLineBorder(Color.MAGENTA, 3));
 
-                titleOfPanelLabel = new JLabel("Recieving packages from providers");
+                titleOfPanelLabel = new JLabel("Receiving packages from providers");
                 titleOfPanelLabel.setFont(titleFont);
 
                 updatePanelButton = new JButton("Update");
@@ -139,7 +149,6 @@ public class ProductManagerRecAndFormingScreenFrame {
                     panel1.add(new ProviderPackagePanel().getPanel());
                 }
                 GridLayout gridLayout = new GridLayout(0, 2, 10, 10);
-                // gridLayout.setColumns(2);
                 panel1.setLayout(gridLayout);
 
                 JScrollPane scrollPane = new JScrollPane(panel1);
@@ -190,8 +199,9 @@ public class ProductManagerRecAndFormingScreenFrame {
                 private JLabel messageLabel = null;
                 private JLabel storageOrderIdLabel = null;
 
-                private JButton acceptButton = null;
-                private JButton showPackageContentButton = null;
+                private JPanel productsPanel = null;
+
+                private JButton recieveDeliveryButton = null;
 
                 public ProviderPackagePanel(){
                     createElements();
@@ -200,7 +210,7 @@ public class ProductManagerRecAndFormingScreenFrame {
 
                 private void createElements(){
                     panel = new JPanel();
-                    panel.setPreferredSize(new Dimension(100, 150));
+                    panel.setPreferredSize(new Dimension(300, 230));
                     panel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 3));
 
                     providerNameLabel = new JLabel("Chingiz");
@@ -210,9 +220,32 @@ public class ProductManagerRecAndFormingScreenFrame {
                     storageOrderIdLabel = new JLabel("z000");
                     storageOrderIdLabel.setFont(anotherFont);
 
-                    acceptButton = new JButton("Accept");
+                    JPanel panel1 = new JPanel();
+                    panel1.setLayout(new BoxLayout(panel1, BoxLayout.Y_AXIS));
 
-                    showPackageContentButton = new JButton("Show content");
+//                    for(int i = 0; i < 4; i++){
+//                        panel1.add(new ProductInPackage().getPanel());
+//                        panel1.add(Box.createVerticalStrut(10));
+//                    }
+
+
+
+                    JScrollPane scrollPane = new JScrollPane(panel1);
+                    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+                    productsPanel = new JPanel();
+                    productsPanel.setPreferredSize(new Dimension(330, 150));
+                    productsPanel.setLayout(new BorderLayout());
+                    productsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+                    productsPanel.add(scrollPane);
+
+                    recieveDeliveryButton = new JButton("Receive delivery");
+                    recieveDeliveryButton.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e){
+                            receiveDeliveryButtonFunction();
+                        }
+                    });
                 }
 
                 private void compose(){
@@ -224,15 +257,15 @@ public class ProductManagerRecAndFormingScreenFrame {
 
                     panel.add(panel1);
 
-                    l.setHorizontalGroup(l.createParallelGroup(CENTER)
+                    l.setHorizontalGroup(l.createParallelGroup(CENTER, false)
                             .addGroup(l.createSequentialGroup()
-                                    .addComponent(providerNameLabel)
-                                    .addComponent(messageLabel)
-                                    .addComponent(storageOrderIdLabel)
+                                    .addComponent(providerNameLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(messageLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(storageOrderIdLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                             )
+                            .addComponent(productsPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                             .addGroup(l.createSequentialGroup()
-                                    .addComponent(acceptButton)
-                                    .addComponent(showPackageContentButton)
+                                    .addComponent(recieveDeliveryButton)
                             )
                     );
 
@@ -242,15 +275,19 @@ public class ProductManagerRecAndFormingScreenFrame {
                                     .addComponent(messageLabel)
                                     .addComponent(storageOrderIdLabel)
                             )
+                            .addComponent(productsPanel)
                             .addGroup(l.createParallelGroup()
-                                    .addComponent(acceptButton)
-                                    .addComponent(showPackageContentButton)
+                                    .addComponent(recieveDeliveryButton)
                             )
                     );
                 }
 
                 public JPanel getPanel(){
                     return panel;
+                }
+
+                private void receiveDeliveryButtonFunction(){
+
                 }
             }
         }
@@ -261,6 +298,10 @@ public class ProductManagerRecAndFormingScreenFrame {
 
             private JLabel titleOfPanelLabel = null;
             private JPanel formedPackagesPanel = null;
+
+            private JPanel panel1 = null;
+            private int amountOfFormedPackagesInFormingPackagesPanel = 3;
+            private ArrayList<JPanel> arrayOfFormedPackagesInFormingPackagePanel = null;
 
             public FormingClientsPackagesPanel(){
                 createElements();
@@ -275,12 +316,21 @@ public class ProductManagerRecAndFormingScreenFrame {
                 titleOfPanelLabel = new JLabel("Forming packages for clients");
                 titleOfPanelLabel.setFont(titleFont);
 
-                JPanel panel1 = new JPanel();
-                for(int i = 0; i < 5; i++){
-                    panel1.add(new PackagePanel().getPanel());
+                arrayOfFormedPackagesInFormingPackagePanel = new ArrayList<>();
+//                for(int i = 0; i < amountOfFormedPackagesInFormingPackagesPanel; i++){
+//                    arrayOfFormedPackagesInFormingPackagePanel.add(new PackagePanel().getPanel());
+//                }
+                for (ClientOrder order: formedOrders) {
+                    arrayOfFormedPackagesInFormingPackagePanel.add(new PackagePanel(order).getPanel());
                 }
+
+
+                panel1 = new JPanel();
                 GridLayout gridLayout = new GridLayout(0,2,10,10);
                 panel1.setLayout(gridLayout);
+                for(JPanel formedPackage : arrayOfFormedPackagesInFormingPackagePanel){
+                    panel1.add(formedPackage);
+                }
 
                 JScrollPane scrollPane = new JScrollPane(panel1);
                 scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -297,7 +347,7 @@ public class ProductManagerRecAndFormingScreenFrame {
                 GroupLayout l = new GroupLayout(panel);
                 panel.setLayout(l);
 
-                l.setHorizontalGroup(l.createParallelGroup()
+                l.setHorizontalGroup(l.createParallelGroup(CENTER)
                         .addComponent(titleOfPanelLabel)
                         .addComponent(formedPackagesPanel)
                 );
@@ -312,22 +362,150 @@ public class ProductManagerRecAndFormingScreenFrame {
                 return panel;
             }
 
+//            public void fillPanelWithPackages(){
+//                panel1.removeAll();
+//                arrayOfFormedPackagesInFormingPackagePanel = new ArrayList<>();
+//                for(int i = 0; i < amountOfFormedPackagesInFormingPackagesPanel; i++){
+//                    arrayOfFormedPackagesInFormingPackagePanel.add(new PackagePanel().getPanel());
+//                }
+//                for(JPanel formedPackage : arrayOfFormedPackagesInFormingPackagePanel){
+//                    panel1.add(formedPackage);
+//                }
+//                panel.updateUI();
+//            }
+
             private class PackagePanel{
                 private JPanel panel = null;
 
+                private JLabel orderIdTextLabel = null;
+                private JLabel orderIdValueLabel = null;
+                private JLabel clientNameTextLabel = null;
+                private JLabel clientNameValueLabel = null;
+                private JLabel clientAddressTextLabel = null;
+                private JLabel clientAddressValueLabel = null;
+                private JLabel deliveryDateTextLabel = null;
+                private JLabel deliveryDateValueLabel = null;
+
+                private JPanel productsInPackagePanel = null;
+
                 private JButton cancelFormingButton = null;
 
-                public PackagePanel(){
-                    createElements();
+                // DEPRECATED
+//                public PackagePanel(){
+//                    createElements();
+//                    compose();
+//                }
+
+                public PackagePanel(ClientOrder order){
+                    createElements(order);
                     compose();
                 }
 
-                private void createElements(){
+                // DEPRECATED
+//                private void createElements(){
+//                    panel = new JPanel();
+//                    panel.setPreferredSize(new Dimension(300, 230));
+//                    panel.setBorder(BorderFactory.createLineBorder(new Color(130,50,180), 2));
+//
+//                    orderIdTextLabel = new JLabel("Order ID:");
+//                    orderIdTextLabel.setFont(anotherFont);
+//
+//                    orderIdValueLabel = new JLabel("zzz0");
+//
+//                    clientNameTextLabel = new JLabel("Client name:");
+//                    clientNameTextLabel.setFont(anotherFont);
+//
+//                    clientNameValueLabel = new JLabel("Vano");
+//
+//                    clientAddressTextLabel = new JLabel("Address:");
+//                    clientAddressTextLabel.setFont(anotherFont);
+//
+//                    clientAddressValueLabel = new JLabel("Zybickaia 9");
+//
+//                    deliveryDateTextLabel = new JLabel("Delivery date:");
+//                    deliveryDateTextLabel.setFont(anotherFont);
+//
+//                    deliveryDateValueLabel = new JLabel("30.12.2023");
+//
+//                    JPanel panel1 = new JPanel();
+//                    panel1.setLayout(new BoxLayout(panel1, BoxLayout.Y_AXIS));
+//
+//                    for(int i = 0; i < 3; i++){
+//                        panel1.add(new ProductInPackage().getPanel());
+//                        panel1.add(Box.createVerticalStrut(10));
+//                    }
+//
+//                    JScrollPane scrollPane = new JScrollPane(panel1);
+//                    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+//                    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+//
+//                    productsInPackagePanel = new JPanel();
+//                    productsInPackagePanel.setPreferredSize(new Dimension(330, 80));
+//                    productsInPackagePanel.setLayout(new BorderLayout());
+//                    productsInPackagePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+//                    productsInPackagePanel.add(scrollPane);
+//
+//                    cancelFormingButton = new JButton("Cancel forming");
+//                    cancelFormingButton.addActionListener(new ActionListener() {
+//                        public void actionPerformed(ActionEvent e){
+//                            cancelFormingButtonFunction();
+//                        }
+//                    });
+//                }
+
+                private void createElements(ClientOrder order){
                     panel = new JPanel();
-                    panel.setPreferredSize(new Dimension(100, 200));
+                    panel.setPreferredSize(new Dimension(300, 230));
                     panel.setBorder(BorderFactory.createLineBorder(new Color(130,50,180), 2));
 
-                    cancelFormingButton = new JButton("Cancel forming");
+                    orderIdTextLabel = new JLabel("Order ID:");
+                    orderIdTextLabel.setFont(anotherFont);
+
+                    orderIdValueLabel = new JLabel("" + order.getId());
+
+                    clientNameTextLabel = new JLabel("Client name:");
+                    clientNameTextLabel.setFont(anotherFont);
+
+                    clientNameValueLabel = new JLabel(order.deliveryName);
+
+                    clientAddressTextLabel = new JLabel("Address:");
+                    clientAddressTextLabel.setFont(anotherFont);
+
+                    clientAddressValueLabel = new JLabel(order.deliveryAddress);
+
+                    deliveryDateTextLabel = new JLabel("Delivery date:");
+                    deliveryDateTextLabel.setFont(anotherFont);
+
+                    deliveryDateValueLabel = new JLabel(order.deliveryDate);
+
+                    JPanel panel1 = new JPanel();
+                    panel1.setLayout(new BoxLayout(panel1, BoxLayout.Y_AXIS));
+
+//                    for(int i = 0; i < 3; i++){
+//                        panel1.add(new ProductInPackage().getPanel());
+//                        panel1.add(Box.createVerticalStrut(10));
+//                    }
+                    for (Product product: order.deliveryProducts) {
+                        panel1.add(new ProductInPackage(product).getPanel());
+                        panel1.add(Box.createVerticalStrut(10));
+                    }
+
+                    JScrollPane scrollPane = new JScrollPane(panel1);
+                    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+                    productsInPackagePanel = new JPanel();
+                    productsInPackagePanel.setPreferredSize(new Dimension(330, 80));
+                    productsInPackagePanel.setLayout(new BorderLayout());
+                    productsInPackagePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+                    productsInPackagePanel.add(scrollPane);
+
+                    cancelFormingButton = new JButton("Revert forming");
+                    cancelFormingButton.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e){
+                            cancelFormingButtonFunction(order);
+                        }
+                    });
                 }
 
                 private void compose(){
@@ -340,10 +518,52 @@ public class ProductManagerRecAndFormingScreenFrame {
                     panel.add(panel1);
 
                     l.setHorizontalGroup(l.createParallelGroup()
+                            .addGroup(l.createSequentialGroup()
+                                    .addComponent(orderIdTextLabel)
+                                    .addGap(5)
+                                    .addComponent(orderIdValueLabel)
+                            )
+                            .addGroup(l.createSequentialGroup()
+                                    .addComponent(clientNameTextLabel)
+                                    .addGap(5)
+                                    .addComponent(clientNameValueLabel)
+                            )
+                            .addGroup(l.createSequentialGroup()
+                                    .addComponent(clientAddressTextLabel)
+                                    .addGap(5)
+                                    .addComponent(clientAddressValueLabel)
+                            )
+                            .addGroup(l.createSequentialGroup()
+                                    .addComponent(deliveryDateTextLabel)
+                                    .addGap(5)
+                                    .addComponent(deliveryDateValueLabel)
+                            )
+                            .addComponent(productsInPackagePanel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                             .addComponent(cancelFormingButton)
                     );
 
                     l.setVerticalGroup(l.createSequentialGroup()
+                            .addGroup(l.createParallelGroup()
+                                    .addComponent(orderIdTextLabel)
+                                    .addComponent(orderIdValueLabel)
+                            )
+                            .addGap(10)
+                            .addGroup(l.createParallelGroup()
+                                    .addComponent(clientNameTextLabel)
+                                    .addComponent(clientNameValueLabel)
+                            )
+                            .addGap(10)
+                            .addGroup(l.createParallelGroup()
+                                    .addComponent(clientAddressTextLabel)
+                                    .addComponent(clientAddressValueLabel)
+                            )
+                            .addGap(10)
+                            .addGroup(l.createParallelGroup()
+                                    .addComponent(deliveryDateTextLabel)
+                                    .addComponent(deliveryDateValueLabel)
+                            )
+                            .addGap(10)
+                            .addComponent(productsInPackagePanel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
                             .addComponent(cancelFormingButton)
                     );
                 }
@@ -351,38 +571,82 @@ public class ProductManagerRecAndFormingScreenFrame {
                 public JPanel getPanel(){
                     return panel;
                 }
+
+                private void cancelFormingButtonFunction(ClientOrder order){
+                    if(amountOfFormedPackagesInFormingPackagesPanel > 0)
+                        amountOfFormedPackagesInFormingPackagesPanel--;
+//                    fillPanelWithPackages();
+                    order.deliveryStatus = OrderStatus.IN_PROCESS;
+                    frame.dispose();
+                    new ProductManagerRecAndFormingScreenFrame();
+                    Toast.show("Forming Canceled");
+                }
+            }
+        }
+
+        private class ProductInPackage {
+            private JPanel panel = null;
+
+            private JLabel productIdLabel = null;
+            private JLabel productNameLabel = null;
+            private JLabel productAmountLabel = null;
+
+            // DEPRECATED
+//            public ProductInPackage(){
+//                createElements();
+//                compose();
+//            }
+            public ProductInPackage(Product product){
+                createElements(product);
+                compose();
             }
 
-            private class AddPackagePanel{
-                private JPanel panel = null;
+            // DEPRECATED
+//            private void createElements(){
+//                panel = new JPanel();
+//                panel.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 3));
+//
+//                productIdLabel = new JLabel("product id");
+//
+//                productNameLabel = new JLabel("product name");
+//
+//                productAmountLabel = new JLabel("product amount");
+//            }
 
-                public AddPackagePanel(){
-                    createElements();
-                    compose();
-                }
+            private void createElements(Product product){
+                panel = new JPanel();
+                panel.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 3));
 
-                private void createElements(){
-                    panel = new JPanel();
-                    panel.setPreferredSize(new Dimension(100, 100));
-                    panel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 3));
-                }
+                productIdLabel = new JLabel("" + product.id);
 
-                private void compose(){
-                    GroupLayout l = new GroupLayout(panel);
-                    panel.setLayout(l);
+                productNameLabel = new JLabel(product.name);
 
-                    l.setHorizontalGroup(l.createSequentialGroup()
+                productAmountLabel = new JLabel("" + product.availableAmount);
+            }
 
-                    );
+            private void compose(){
+                GroupLayout l = new GroupLayout(panel);
+                panel.setLayout(l);
 
-                    l.setVerticalGroup(l.createParallelGroup(CENTER)
+                l.setHorizontalGroup(l.createSequentialGroup()
+                        .addComponent(productIdLabel)
+                        .addGap(15)
+                        .addComponent(productNameLabel)
+                        .addGap(15)
+                        .addComponent(productAmountLabel)
+                );
 
-                    );
-                }
+                l.setVerticalGroup(l.createParallelGroup()
+                        .addComponent(productIdLabel)
+                        .addGap(15)
+                        .addComponent(productNameLabel)
+                        .addGap(15)
+                        .addComponent(productAmountLabel)
+                );
+            }
 
-                public JPanel getPanel(){
-                    return panel;
-                }
+            public JPanel getPanel(){
+                return panel;
             }
         }
     }

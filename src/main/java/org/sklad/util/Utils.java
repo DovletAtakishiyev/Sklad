@@ -1,8 +1,13 @@
 package org.sklad.util;
 
-import org.sklad.model.Order;
+import org.sklad.model.ClientOrder;
 import org.sklad.model.OrderStatus;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,20 +15,20 @@ import java.util.Date;
 import java.util.Objects;
 
 abstract public class Utils {
-    public static String getStatus(Order order){
-        if (order.deliveryStatus == OrderStatus.READY_TO_DELIVER){
+    public static String getStatus(ClientOrder clientOrder){
+        if (clientOrder.deliveryStatus == OrderStatus.READY_TO_DELIVER){
             return "Ready to Deliver";
         }
-        if (order.deliveryStatus == OrderStatus.IN_PROCESS){
+        if (clientOrder.deliveryStatus == OrderStatus.IN_PROCESS){
             return "In process";
         }
-        if (order.deliveryStatus == OrderStatus.BEING_DELIVERED){
+        if (clientOrder.deliveryStatus == OrderStatus.BEING_DELIVERED){
             return "Coming Soon";
         }
-        if (order.deliveryStatus == OrderStatus.DELIVERED){
+        if (clientOrder.deliveryStatus == OrderStatus.DELIVERED){
             return "Delivered";
         }
-        if (order.deliveryStatus == OrderStatus.CANCELED){
+        if (clientOrder.deliveryStatus == OrderStatus.CANCELED){
             return "Canceled";
         }
         return "N/A";
@@ -54,5 +59,15 @@ abstract public class Utils {
             return true;
         }
         return date.after(new Date());
+    }
+
+    public static Image resizeImage(URL imageUrl) throws IOException {
+        BufferedImage originalImage = ImageIO.read(imageUrl);
+        Image scaledImage = originalImage.getScaledInstance(75, 75, Image.SCALE_SMOOTH);
+        BufferedImage bufferedScaledImage = new BufferedImage(75, 75, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = bufferedScaledImage.createGraphics();
+        g.drawImage(scaledImage, 0, 0, null);
+        g.dispose();
+        return bufferedScaledImage;
     }
 }

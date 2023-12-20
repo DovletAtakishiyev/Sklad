@@ -2,31 +2,31 @@ package org.sklad.model;
 
 public class Package {
 
-    private Order packageOrder = null;
+    private ClientOrder packageClientOrder = null;
     private String clientAddress = null;
     private String deliveryDate = null;
     private String currentAddress = null;
 
     // Placeholder
     public Package(){
-        packageOrder = null;
+        packageClientOrder = null;
         clientAddress = new String("default address");
         deliveryDate = new String("29.12.2000");
         currentAddress = "Warehouse";
     }
 
-    public Package(Order order){
-        packageOrder = new Order(order);
-        clientAddress = packageOrder.deliveryAddress;
-        deliveryDate = packageOrder.deliveryDate;
+    public Package(ClientOrder clientOrder){
+        packageClientOrder = new ClientOrder(clientOrder);
+        clientAddress = packageClientOrder.deliveryAddress;
+        deliveryDate = packageClientOrder.deliveryDate;
         currentAddress = "Warehouse";
     }
 
-    public Order getPackageOrder(){
-        return packageOrder;
+    public ClientOrder getPackageOrder(){
+        return packageClientOrder;
     }
     public int getOderId(){
-        return packageOrder.getId();
+        return packageClientOrder.getId();
     }
     public String getClientAddress(){
         return clientAddress;

@@ -1,48 +1,60 @@
 package org.sklad.repository;
 
 import org.sklad.db.DB;
-import org.sklad.model.Client;
-import org.sklad.model.Order;
-import org.sklad.model.OrderStatus;
+import org.sklad.model.*;
 import org.sklad.model.Package;
 import org.sklad.util.Utils;
-
 import java.util.ArrayList;
 
 public class ManagerRepo {
     private DB db = DB.getInstance();
 
-    public ArrayList<Order> getOrders(){
-        ArrayList<Order> orders = new ArrayList<>();
+    // ---------------------------- Orders
+    private ArrayList<ClientOrder> getOrders(){
+        ArrayList<ClientOrder> clientOrders = new ArrayList<>();
 
-        for (Client client: db.clients) {
-            for (Order order: client.orders) {
-                    orders.add(order);
+        for (Client client: db.clients)
+            for (ClientOrder clientOrder : client.clientOrders)
+                    clientOrders.add(clientOrder);
+        return clientOrders;
+    }
+
+    public ArrayList<ClientOrder> getOrdersBy(boolean formed) {
+        ArrayList<ClientOrder> orders = new ArrayList<>();
+        for (Client client : db.clients) {
+            for (ClientOrder clientOrder : client.clientOrders) {
+                if (formed){
+                    if (clientOrder.deliveryStatus == OrderStatus.READY_TO_DELIVER) {
+                        orders.add(clientOrder);
+                    }
+                } else {
+                    if (clientOrder.deliveryStatus == OrderStatus.IN_PROCESS) {
+                        orders.add(clientOrder);
+                    }
+                }
             }
         }
         return orders;
     }
 
-
-    public ArrayList<Package> getAvailablePackages(){
-        ArrayList<Package> packages = new ArrayList<>();
-        for (Order order: getOrders()) {
-            if (Utils.isItToday(order.deliveryDate) &&
-                order.deliveryStatus != OrderStatus.CANCELED &&
-                order.deliveryStatus != OrderStatus.BEING_DELIVERED &&
-                order.deliveryStatus != OrderStatus.DELIVERED
-            )
-                packages.add(new Package(order));
-        }
-        return packages;
-    }
-
     public void updateOrderStatus(Package pkg, OrderStatus status){
-        for (Order order: getOrders()) {
-            if (order.getId() == pkg.getOderId()){
-                order.deliveryStatus = status;
+        for (ClientOrder clientOrder : getOrders()) {
+            if (clientOrder.getId() == pkg.getOderId()){
+                clientOrder.deliveryStatus = status;
             }
         }
+    }
+
+    // ---------------------------- Packages
+    public ArrayList<Package> getAvailablePackages(){
+        ArrayList<Package> packages = new ArrayList<>();
+        for (ClientOrder clientOrder : getOrders()) {
+            if (Utils.isItToday(clientOrder.deliveryDate) &&
+                clientOrder.deliveryStatus == OrderStatus.READY_TO_DELIVER
+            )
+                packages.add(new Package(clientOrder));
+        }
+        return packages;
     }
 
     public void setCurrentPackage(Package pkg){
@@ -51,6 +63,22 @@ public class ManagerRepo {
 
     public Package getCurrentPackage(){
         return db.deliveringPackage;
+    }
+
+    // ---------------------------- Providers
+    public ArrayList<Provider> getProviders(){
+        return db.providers;
+    }
+
+    public void addProvider(Provider provider){
+        db.providers.add(provider);
+    }
+
+    public void removeProvider(Provider provider){
+        for (Provider rProvider: db.providers) {
+            if (rProvider.getId() == provider.getId())
+                db.providers.remove(rProvider);
+        }
     }
 
 }

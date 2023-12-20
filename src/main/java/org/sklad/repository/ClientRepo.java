@@ -2,10 +2,11 @@ package org.sklad.repository;
 
 import org.sklad.db.DB;
 import org.sklad.model.Client;
-import org.sklad.model.Order;
+import org.sklad.model.ClientOrder;
 import org.sklad.model.OrderStatus;
 import org.sklad.model.Product;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -54,22 +55,22 @@ public class ClientRepo {
         getCurrentClient().cart.remove(product);
     }
 
-    public Order getOrderInfo(){
-        return db.orderInfo;
+    public ClientOrder getOrderInfo(){
+        return db.clientOrderInfo;
     }
-    public void setOrderInfo(Order order){
-        db.orderInfo = order;
+    public void setOrderInfo(ClientOrder clientOrder){
+        db.clientOrderInfo = clientOrder;
     }
 
-    public void removeOrder(Order order){
+    public void removeOrder(ClientOrder clientOrder){
         ProductRepo productRepo = new ProductRepo();
-        for (Product product: order.deliveryProducts) {
+        for (Product product: clientOrder.deliveryProducts) {
             productRepo.addProduct(product);
         }
         Client client = db.currentClient;
 
-        Optional<Order> oOrder = client.orders.stream()
-                .filter(checkOrder -> checkOrder.getId() == order.getId())
+        Optional<ClientOrder> oOrder = client.clientOrders.stream()
+                .filter(checkOrder -> checkOrder.getId() == clientOrder.getId())
                 .findFirst();
         oOrder.ifPresent(value -> {
             value.deliveryStatus = OrderStatus.CANCELED;

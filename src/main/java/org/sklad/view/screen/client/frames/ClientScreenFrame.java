@@ -1,15 +1,13 @@
 package org.sklad.view.screen.client.frames;
 
 import org.sklad.model.Client;
-import org.sklad.model.Order;
+import org.sklad.model.ClientOrder;
 import org.sklad.model.Package;
 import org.sklad.repository.ClientRepo;
 import org.sklad.repository.ManagerRepo;
+import org.sklad.view.screen.ChoosingRoleFrame;
 import org.sklad.view.screen.client.courier.ThereIsCourierScreenFrame;
 import org.sklad.view.screen.client.courier.ThereIsNoCourierScreenFrame;
-import org.sklad.view.screen.client.login.LoginScreenFrame;
-
-import java.util.Date;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
@@ -114,8 +112,8 @@ public class ClientScreenFrame {
 
     private void checkCourierButtonFunction() {
         if (currentPackage != null){
-            for (Order order: currentClient.orders) {
-                if (Objects.equals(order.deliveryAddress, currentPackage.getCurrentAddress())){
+            for (ClientOrder clientOrder : currentClient.clientOrders) {
+                if (Objects.equals(clientOrder.deliveryAddress, currentPackage.getCurrentAddress())){
                     frame.dispose();
                     new ThereIsCourierScreenFrame();
                     return;
@@ -131,6 +129,6 @@ public class ClientScreenFrame {
         repo.setOrderInfo(null);
         repo.setCurrentClient(null);
         frame.dispose();
-        new LoginScreenFrame();
+        new ChoosingRoleFrame();
     }
 }

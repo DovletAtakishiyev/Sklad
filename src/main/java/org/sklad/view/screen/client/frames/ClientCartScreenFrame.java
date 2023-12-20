@@ -1,7 +1,7 @@
 package org.sklad.view.screen.client.frames;
 
 import org.sklad.model.Client;
-import org.sklad.model.Order;
+import org.sklad.model.ClientOrder;
 import org.sklad.model.Product;
 import org.sklad.repository.ClientRepo;
 import org.sklad.repository.ProductRepo;
@@ -40,7 +40,7 @@ public class ClientCartScreenFrame {
 
     private ClientRepo clientRepository;
     private ProductRepo productRepository;
-    private Order cartOrder;
+    private ClientOrder cartClientOrder;
     private Client currentClient;
 
     public ClientCartScreenFrame() {
@@ -48,9 +48,9 @@ public class ClientCartScreenFrame {
         clientRepository = new ClientRepo();
         productRepository = new ProductRepo();
         currentClient = clientRepository.getCurrentClient();
-        cartOrder = clientRepository.getOrderInfo();
-        if (cartOrder == null){
-            clientRepository.setOrderInfo(cartOrder = new Order(
+        cartClientOrder = clientRepository.getOrderInfo();
+        if (cartClientOrder == null){
+            clientRepository.setOrderInfo(cartClientOrder = new ClientOrder(
                     currentClient.name,
                     currentClient.phone,
                     currentClient.address,
@@ -155,8 +155,8 @@ public class ClientCartScreenFrame {
             // Delivery Name
             nameLabel = new JLabel("Name:");
             nameTextField = new JTextField(15);
-            if (cartOrder.deliveryName != null)
-                nameTextField.setText(cartOrder.deliveryName);
+            if (cartClientOrder.deliveryName != null)
+                nameTextField.setText(cartClientOrder.deliveryName);
             nameTextField.addKeyListener(new KeyListener() {
                 @Override
                 public void keyTyped(KeyEvent e) {
@@ -168,15 +168,15 @@ public class ClientCartScreenFrame {
 
                 @Override
                 public void keyReleased(KeyEvent e) {
-                    cartOrder.deliveryName = nameTextField.getText();
+                    cartClientOrder.deliveryName = nameTextField.getText();
                 }
             });
 
             // Delivery phone number
             phoneNumberLabel = new JLabel("Phone:");
             phoneNumberTextField = new JTextField(15);
-            if (cartOrder.deliveryPhone != null) {
-                phoneNumberTextField.setText(cartOrder.deliveryPhone);
+            if (cartClientOrder.deliveryPhone != null) {
+                phoneNumberTextField.setText(cartClientOrder.deliveryPhone);
             }
             phoneNumberTextField.addKeyListener(new KeyListener() {
                 @Override
@@ -189,14 +189,14 @@ public class ClientCartScreenFrame {
 
                 @Override
                 public void keyReleased(KeyEvent e) {
-                    cartOrder.deliveryPhone = phoneNumberTextField.getText();
+                    cartClientOrder.deliveryPhone = phoneNumberTextField.getText();
                 }
             });
 
             // Delivery address
             addressLabel = new JLabel("Address:");
             addressTextField = new JTextField(15);
-            addressTextField.setText(cartOrder.deliveryAddress);
+            addressTextField.setText(cartClientOrder.deliveryAddress);
             addressTextField.addKeyListener(new KeyListener() {
                 @Override
                 public void keyTyped(KeyEvent e) {}
@@ -204,15 +204,15 @@ public class ClientCartScreenFrame {
                 public void keyPressed(KeyEvent e) {}
                 @Override
                 public void keyReleased(KeyEvent e) {
-                    cartOrder.deliveryAddress = addressTextField.getText();
+                    cartClientOrder.deliveryAddress = addressTextField.getText();
                 }
             });
 
             // Delivery date
             deliveringDateLabel = new JLabel("Date to deliver:");
             deliveringDateTextField = new JTextField(15);
-            if (cartOrder.deliveryDate != null) {
-                deliveringDateTextField.setText(cartOrder.deliveryDate);
+            if (cartClientOrder.deliveryDate != null) {
+                deliveringDateTextField.setText(cartClientOrder.deliveryDate);
             }
             deliveringDateTextField.addKeyListener(new KeyListener() {
                 @Override
@@ -222,7 +222,7 @@ public class ClientCartScreenFrame {
                 @Override
                 public void keyReleased(KeyEvent e) {
                     // TODO(ADD DATE CONVERTER)
-                    cartOrder.deliveryDate = deliveringDateTextField.getText();
+                    cartClientOrder.deliveryDate = deliveringDateTextField.getText();
                 }
             });
 
@@ -263,19 +263,19 @@ public class ClientCartScreenFrame {
         }
 
         private void makeOrderButtonFunction() {
-            if (!cartOrder.checkValidity()){
+            if (!cartClientOrder.checkValidity()){
                 Toast.show("Fill required fields");
             } else if (currentClient.cart.isEmpty()){
                 Toast.show("Nothing to add");
             } else {
-                if (Utils.isValidDateFormat(cartOrder.deliveryDate)){
-                    cartOrder.deliveryProducts = new ArrayList<>(currentClient.cart);
+                if (Utils.isValidDateFormat(cartClientOrder.deliveryDate)){
+                    cartClientOrder.deliveryProducts = new ArrayList<>(currentClient.cart);
                     //------------------------------------------------------------//
 //                    cartOrder.deliveryStatus = OrderStatus.IN_PROCESS;
-                    cartOrder.deliveryStatus = OrderStatus.IN_PROCESS;
+                    cartClientOrder.deliveryStatus = OrderStatus.IN_PROCESS;
                     //------------------------------------------------------------//
-                    cartOrder.setId(Order.provideId());
-                    currentClient.orders.add(cartOrder);
+                    cartClientOrder.setId(ClientOrder.provideId());
+                    currentClient.clientOrders.add(cartClientOrder);
                     currentClient.cart = new ArrayList<>();
                     clientRepository.setOrderInfo(null);
                     frame.dispose();
@@ -360,7 +360,7 @@ public class ClientCartScreenFrame {
             productImageLabel = new JLabel();                                   // Image Url
             try {
                 URL imageURL = new URL(product.imageUrl);
-                ImageIcon icon = new ImageIcon(resizeImage(imageURL));
+                ImageIcon icon = new ImageIcon(Utils.resizeImage(imageURL));
                 productImageLabel.setIcon(icon);
             } catch (Exception e) {
                 Image image = Toolkit.getDefaultToolkit().createImage("Images/imagePlaceHolder.png");
@@ -434,16 +434,6 @@ public class ClientCartScreenFrame {
             clientRepository.removeProductFromCart(product);
             frame.dispose();
             new ClientCartScreenFrame();
-        }
-
-        private static Image resizeImage(URL imageUrl) throws IOException {
-            BufferedImage originalImage = ImageIO.read(imageUrl);
-            Image scaledImage = originalImage.getScaledInstance(75, 75, Image.SCALE_SMOOTH);
-            BufferedImage bufferedScaledImage = new BufferedImage(75, 75, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = bufferedScaledImage.createGraphics();
-            g.drawImage(scaledImage, 0, 0, null);
-            g.dispose();
-            return bufferedScaledImage;
         }
 
         public JPanel getPanel() {

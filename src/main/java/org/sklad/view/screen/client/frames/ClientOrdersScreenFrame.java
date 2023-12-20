@@ -1,7 +1,7 @@
 package org.sklad.view.screen.client.frames;
 
 import org.sklad.model.Client;
-import org.sklad.model.Order;
+import org.sklad.model.ClientOrder;
 import org.sklad.model.OrderStatus;
 import org.sklad.model.Product;
 import org.sklad.repository.ClientRepo;
@@ -57,8 +57,8 @@ public class ClientOrdersScreenFrame {
 //			panel1.add(Box.createVerticalStrut(10));
 //		}
 
-		for (Order order: currentClient.orders) {
-			panel1.add(new OrderPanel(order).getPanel());
+		for (ClientOrder clientOrder : currentClient.clientOrders) {
+			panel1.add(new OrderPanel(clientOrder).getPanel());
 			panel1.add(Box.createVerticalStrut(10));
 		}
 
@@ -111,8 +111,8 @@ public class ClientOrdersScreenFrame {
 			compose();
 		}
 
-		public OrderPanel(Order order){
-			createElements(order);
+		public OrderPanel(ClientOrder clientOrder){
+			createElements(clientOrder);
 			compose();
 		}
 
@@ -150,10 +150,10 @@ public class ClientOrdersScreenFrame {
 			orderInfoPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 		}
 
-		private void createElements(Order order){
+		private void createElements(ClientOrder clientOrder){
 			panel = new JPanel();
 			panel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-			orderIdLabel = new JLabel("order id : " + order.getId());
+			orderIdLabel = new JLabel("order id : " + clientOrder.getId());
 			orderIdLabel.setFont(anotherFont);
 
 			productsPanel = new JPanel();
@@ -170,7 +170,7 @@ public class ClientOrdersScreenFrame {
 //				panel1.add(Box.createVerticalStrut(5));
 //			}
 
-			for (Product product: order.deliveryProducts) {
+			for (Product product: clientOrder.deliveryProducts) {
 				panel1.add(new ProductInOrderPanel(product).getPanel());
 				panel1.add(Box.createVerticalStrut(5));
 			}
@@ -185,7 +185,7 @@ public class ClientOrdersScreenFrame {
 
 
 //			orderInfoPanel = (new OrderInfoPanel()).getPanel();
-			orderInfoPanel = (new OrderInfoPanel(order)).getPanel();
+			orderInfoPanel = (new OrderInfoPanel(clientOrder)).getPanel();
 			orderInfoPanel.setPreferredSize(new Dimension(250, 250));
 			orderInfoPanel.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
 		}
@@ -276,7 +276,7 @@ public class ClientOrdersScreenFrame {
 				productImageLabel = new JLabel();
 				try {
 					URL imageURL = new URL(product.imageUrl);
-					ImageIcon icon = new ImageIcon(resizeImage(imageURL));
+					ImageIcon icon = new ImageIcon(Utils.resizeImage(imageURL));
 					productImageLabel.setIcon(icon);
 				} catch (Exception e) {
 					Image image = Toolkit.getDefaultToolkit().createImage("Images/imagePlaceHolder.png");
@@ -366,8 +366,8 @@ public class ClientOrdersScreenFrame {
 				compose();
 			}
 
-			public OrderInfoPanel(Order order){
-				createElements(order);
+			public OrderInfoPanel(ClientOrder clientOrder){
+				createElements(clientOrder);
 				compose();
 			}
 
@@ -417,55 +417,55 @@ public class ClientOrdersScreenFrame {
 				cancelOrderButton = new JButton("Cancel order");
 			}
 
-			private void createElements(Order order){
+			private void createElements(ClientOrder clientOrder){
 				panel = new JPanel();
 
 				clientNameTextLabel = new JLabel("Name: ");
 				clientNameTextLabel.setFont(anotherFont);
 				// clientNameTextLabel.setHorizontalAlignment(JLabel.CENTER);
 
-				clientNameValueLabel = new JLabel(order.deliveryName);
+				clientNameValueLabel = new JLabel(clientOrder.deliveryName);
 				// clientNameValueLabel.setHorizontalAlignment(JLabel.CENTER);
 
 				phoneNumberTextLabel = new JLabel("Phone number: ");
 				phoneNumberTextLabel.setFont(anotherFont);
 				// phoneNumberTextLabel.setHorizontalAlignment(JLabel.CENTER);
 
-				phoneNumberValueLabel = new JLabel(order.deliveryPhone);
+				phoneNumberValueLabel = new JLabel(clientOrder.deliveryPhone);
 				// phoneNumberValueLabel.setHorizontalAlignment(JLabel.CENTER);
 
 				addressTextLabel = new JLabel("Address: ");
 				addressTextLabel.setFont(anotherFont);
 				// addressTextLabel.setHorizontalAlignment(JLabel.CENTER);
 
-				addressValueLabel = new JLabel(order.deliveryAddress);
+				addressValueLabel = new JLabel(clientOrder.deliveryAddress);
 				// addressValueLabel.setHorizontalAlignment(JLabel.CENTER);
 
 				deliveringDateTextLabel = new JLabel("Delivery date: ");
 				deliveringDateTextLabel.setFont(anotherFont);
 				// deliveringDateTextLabel.setHorizontalAlignment(JLabel.CENTER);
 
-				deliveringDateValueLabel = new JLabel(order.deliveryDate);
+				deliveringDateValueLabel = new JLabel(clientOrder.deliveryDate);
 				// deliveringDateValueLabel.setHorizontalAlignment(JLabel.CENTER);
 
 				totalPriceTextLabel = new JLabel("Total price: ");
 				totalPriceTextLabel.setFont(anotherFont);
 				// totalPriceTextLabel.setHorizontalAlignment(JLabel.CENTER);
 
-				totalPriceValueLabel = new JLabel("" + order.calculateTotalPrice());
+				totalPriceValueLabel = new JLabel("" + clientOrder.calculateTotalPrice());
 				// totalPriceValueLabel.setHorizontalAlignment(JLabel.CENTER);
 
 				orderStatusTextLabel = new JLabel("Status: ");
 				orderStatusTextLabel.setFont(anotherFont);
 
-				orderStatusValueLabel = new JLabel(Utils.getStatus(order));
+				orderStatusValueLabel = new JLabel(Utils.getStatus(clientOrder));
 
 				cancelOrderButton = new JButton("Cancel order");
-				if (order.deliveryStatus == OrderStatus.CANCELED || order.deliveryStatus == OrderStatus.DELIVERED){
+				if (clientOrder.deliveryStatus == OrderStatus.CANCELED || clientOrder.deliveryStatus == OrderStatus.DELIVERED){
 					cancelOrderButton.setEnabled(false);
 				}
 				cancelOrderButton.addActionListener(event -> {
-					clientRepository.removeOrder(order);
+					clientRepository.removeOrder(clientOrder);
 					frame.dispose();
 					new ClientOrdersScreenFrame();
 					Toast.show("Order Canceled");
@@ -553,16 +553,6 @@ public class ClientOrdersScreenFrame {
 			public JPanel getPanel(){
 				return panel;
 			}
-		}
-
-		private static Image resizeImage(URL imageUrl) throws IOException {
-			BufferedImage originalImage = ImageIO.read(imageUrl);
-			Image scaledImage = originalImage.getScaledInstance(75, 75, Image.SCALE_SMOOTH);
-			BufferedImage bufferedScaledImage = new BufferedImage(75, 75, BufferedImage.TYPE_INT_RGB);
-			Graphics2D g = bufferedScaledImage.createGraphics();
-			g.drawImage(scaledImage, 0, 0, null);
-			g.dispose();
-			return bufferedScaledImage;
 		}
 	}
 }

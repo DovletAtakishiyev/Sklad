@@ -5,19 +5,17 @@ import org.sklad.model.Product;
 import org.sklad.repository.ClientRepo;
 import org.sklad.repository.ProductRepo;
 import org.sklad.util.Toast;
+import org.sklad.util.Utils;
 import org.sklad.view.screen.client.toolbar.ClientAppToolBar;
 
 import static javax.swing.GroupLayout.Alignment.*;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class ClientCatalogScreenFrame {
     private JFrame frame;
@@ -28,12 +26,18 @@ public class ClientCatalogScreenFrame {
 
     private JPanel catalogProductsPanel = null;
     // Инициализация репозиториев
-    private ProductRepo productRepository = new ProductRepo();
-    private ClientRepo clientRepository = new ClientRepo();
+    private ProductRepo productRepository;
+    private ClientRepo clientRepository;
     private Client currentClient;
+    private ArrayList<Product> visibleProducts;
 
 
     public ClientCatalogScreenFrame() {
+        productRepository = new ProductRepo();
+        clientRepository = new ClientRepo();
+        currentClient = clientRepository.getCurrentClient();
+        visibleProducts = productRepository.getVisibleProductList();
+
         // Создание окна
         frame = new JFrame("Client catalog");
         frame.setSize(WIDTH, HEIGHT);
@@ -60,7 +64,7 @@ public class ClientCatalogScreenFrame {
 //			panel1.add(Box.createVerticalStrut(5));
 //		}
 
-        for (Product product : productRepository.getProductList()) {
+        for (Product product : visibleProducts) {
             panel1.add(new ProductInCatalogProductsPanel(product).getPanel());
             panel1.add(Box.createVerticalStrut(5));
         }
@@ -176,14 +180,18 @@ public class ClientCatalogScreenFrame {
             productDescriptionLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
             productImageLabel = new JLabel();                                   // Image Url
-            try {        // Image
-                URL imageURL = new URL(product.imageUrl);
-                ImageIcon icon = new ImageIcon(resizeImage(imageURL));
-                productImageLabel.setIcon(icon);
-            } catch (Exception e) {
-                Image image = Toolkit.getDefaultToolkit().createImage("Images/imagePlaceHolder.png");
-                productImageLabel.setIcon(new ImageIcon(image.getScaledInstance(75, 75, Image.SCALE_SMOOTH)));
-                System.out.println("Проблема с картинкой");
+            if (product.image == null) {
+                try {
+                    URL imageURL = new URL(product.imageUrl);
+                    ImageIcon icon = new ImageIcon(Utils.resizeImage(imageURL));
+                    productImageLabel.setIcon(icon);
+                } catch (Exception e) {
+                    Image image = Toolkit.getDefaultToolkit().createImage("Images/imagePlaceHolder.png");
+                    productImageLabel.setIcon(new ImageIcon(image.getScaledInstance(75, 75, Image.SCALE_SMOOTH)));
+                    System.out.println("Проблема с картинкой");
+                }
+            } else {
+                productImageLabel.setIcon(new ImageIcon(product.image.getScaledInstance(75, 75, Image.SCALE_SMOOTH)));
             }
             productImageLabel.setPreferredSize(new Dimension(75, 75));
 
@@ -198,13 +206,9 @@ public class ClientCatalogScreenFrame {
             chosenAmountTextField.setHorizontalAlignment(JTextField.CENTER);
             chosenAmountTextField.addKeyListener(new KeyListener() {
                 @Override
-                public void keyTyped(KeyEvent e) {
-                }
-
+                public void keyTyped(KeyEvent e) {}
                 @Override
-                public void keyPressed(KeyEvent e) {
-                }
-
+                public void keyPressed(KeyEvent e) {}
                 @Override
                 public void keyReleased(KeyEvent e) {
                     try {
@@ -253,7 +257,6 @@ public class ClientCatalogScreenFrame {
 
             addToCartButton = new JButton("Add to cart");
             addToCartButton.addActionListener(event -> {
-                currentClient = clientRepository.getCurrentClient();
                 int amount = Integer.parseInt(chosenAmountTextField.getText());
                 if (amount > 0) {
                     Product productIntoCart = new Product(product);
@@ -265,16 +268,6 @@ public class ClientCatalogScreenFrame {
                 priceOfChosenValueLabel.setText("0.0");
                 availableAmountValueLabel.setText("" + product.availableAmount);
             });
-        }
-
-        private static Image resizeImage(URL imageUrl) throws IOException {
-            BufferedImage originalImage = ImageIO.read(imageUrl);
-            Image scaledImage = originalImage.getScaledInstance(75, 75, Image.SCALE_SMOOTH);
-            BufferedImage bufferedScaledImage = new BufferedImage(75, 75, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = bufferedScaledImage.createGraphics();
-            g.drawImage(scaledImage, 0, 0, null);
-            g.dispose();
-            return bufferedScaledImage;
         }
 
         private void doCalculation(Product product) {

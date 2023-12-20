@@ -1,5 +1,7 @@
 package org.sklad.model;
 
+import java.awt.*;
+
 public class Product {
 
 	public int id;
@@ -8,17 +10,18 @@ public class Product {
 	public int availableAmount;
 	public double pricePerPiece;
 	public String imageUrl;
-	public boolean visibility = false;
+	public Image image;
+	public boolean visible = false;
+	private static int counter = 0;
 
 	public Product(
-			int id,
 			String name,
 			String description,
 			int availableAmount,
 			double pricePerPiece,
 			String imageUrl
 	){
-		this.id = id;
+		this.id = provideId();
 		this.name = name;
 		this.description = description;
 		this.availableAmount = availableAmount;
@@ -36,5 +39,9 @@ public class Product {
 
 	public double calculateTotalPrice(){
 		return availableAmount * pricePerPiece;
+	}
+
+	private static int provideId(){
+		return counter++;
 	}
 }

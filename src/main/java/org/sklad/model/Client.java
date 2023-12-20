@@ -10,7 +10,7 @@ public class Client {
     public String phone;
     public String address;
     public String password;
-    public ArrayList<Order> orders = new ArrayList<>();
+    public ArrayList<ClientOrder> clientOrders = new ArrayList<>();
     public ArrayList<Product> cart = new ArrayList<>();
 
 
@@ -45,7 +45,7 @@ public class Client {
         this.password = client.password;
         this.phone = client.phone;
         this.cart = new ArrayList<>(client.cart);
-        this.orders = new ArrayList<>(client.orders);
+        this.clientOrders = new ArrayList<>(client.clientOrders);
     }
     public void updateData(ArrayList<String> newData){
         this.name = newData.get(0);

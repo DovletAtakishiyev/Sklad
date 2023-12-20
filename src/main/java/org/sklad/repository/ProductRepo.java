@@ -14,6 +14,16 @@ public class ProductRepo {
         return db.productsInWarehouse;
     }
 
+    public ArrayList<Product> getVisibleProductList() {
+        ArrayList<Product> visibleProducts = new ArrayList<>();
+        for (Product product: db.productsInWarehouse) {
+             if (product.visible){
+                 visibleProducts.add(product);
+             }
+        }
+        return visibleProducts;
+    }
+
     public int takeSomeAmountOfProduct(Product product, int amount) {
         Optional<Product> oProduct = db.productsInWarehouse.stream()
                 .filter(element -> element.id == product.id)
