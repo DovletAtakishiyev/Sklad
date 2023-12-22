@@ -14,6 +14,9 @@ public class Product {
 	public boolean visible = false;
 	private static int counter = 0;
 
+	public Product(){
+	}
+
 	public Product(
 			String name,
 			String description,
@@ -29,6 +32,17 @@ public class Product {
 		this.imageUrl = imageUrl;
 	}
 
+	public Product(
+			String name,
+			String description,
+			double pricePerPiece
+	) {
+		this.id = provideId();
+		this.name = name;
+		this.description = description;
+		this.pricePerPiece = pricePerPiece;
+	}
+
 	public Product(Product product){
 		this.id = product.id;
 		this.name = product.name;
@@ -37,11 +51,25 @@ public class Product {
 		this.imageUrl = product.imageUrl;
 	}
 
+	public Product(Product product, int availableAmount){
+		this.id = product.id;
+		this.name = product.name;
+		this.description = product.description;
+		this.pricePerPiece = product.pricePerPiece;
+		this.imageUrl = product.imageUrl;
+		this.availableAmount = availableAmount;
+	}
+
 	public double calculateTotalPrice(){
 		return availableAmount * pricePerPiece;
 	}
 
 	private static int provideId(){
 		return counter++;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

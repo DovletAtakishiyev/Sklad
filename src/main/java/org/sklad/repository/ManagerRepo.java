@@ -4,18 +4,19 @@ import org.sklad.db.DB;
 import org.sklad.model.*;
 import org.sklad.model.Package;
 import org.sklad.util.Utils;
+
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ManagerRepo {
-    private DB db = DB.getInstance();
+    private final DB db = DB.getInstance();
 
     // ---------------------------- Orders
-    private ArrayList<ClientOrder> getOrders(){
+    private ArrayList<ClientOrder> getOrders() {
         ArrayList<ClientOrder> clientOrders = new ArrayList<>();
 
-        for (Client client: db.clients)
-            for (ClientOrder clientOrder : client.clientOrders)
-                    clientOrders.add(clientOrder);
+        for (Client client : db.clients)
+            clientOrders.addAll(client.clientOrders);
         return clientOrders;
     }
 
@@ -23,7 +24,7 @@ public class ManagerRepo {
         ArrayList<ClientOrder> orders = new ArrayList<>();
         for (Client client : db.clients) {
             for (ClientOrder clientOrder : client.clientOrders) {
-                if (formed){
+                if (formed) {
                     if (clientOrder.deliveryStatus == OrderStatus.READY_TO_DELIVER) {
                         orders.add(clientOrder);
                     }
@@ -37,48 +38,87 @@ public class ManagerRepo {
         return orders;
     }
 
-    public void updateOrderStatus(Package pkg, OrderStatus status){
+    public void updateOrderStatus(Package pkg, OrderStatus status) {
         for (ClientOrder clientOrder : getOrders()) {
-            if (clientOrder.getId() == pkg.getOderId()){
+            if (clientOrder.getId() == pkg.getOderId()) {
                 clientOrder.deliveryStatus = status;
             }
         }
     }
 
     // ---------------------------- Packages
-    public ArrayList<Package> getAvailablePackages(){
+    public ArrayList<Package> getAvailablePackages() {
         ArrayList<Package> packages = new ArrayList<>();
         for (ClientOrder clientOrder : getOrders()) {
             if (Utils.isItToday(clientOrder.deliveryDate) &&
-                clientOrder.deliveryStatus == OrderStatus.READY_TO_DELIVER
+                    clientOrder.deliveryStatus == OrderStatus.READY_TO_DELIVER
             )
                 packages.add(new Package(clientOrder));
         }
         return packages;
     }
 
-    public void setCurrentPackage(Package pkg){
+    public void setCurrentPackage(Package pkg) {
         db.deliveringPackage = pkg;
     }
 
-    public Package getCurrentPackage(){
+    public Package getCurrentPackage() {
         return db.deliveringPackage;
     }
 
     // ---------------------------- Providers
-    public ArrayList<Provider> getProviders(){
+    public ArrayList<Provider> getProviders() {
         return db.providers;
     }
 
-    public void addProvider(Provider provider){
+    public void addProvider(Provider provider) {
         db.providers.add(provider);
     }
 
-    public void removeProvider(Provider provider){
-        for (Provider rProvider: db.providers) {
-            if (rProvider.getId() == provider.getId())
-                db.providers.remove(rProvider);
+    public void removeProvider(Provider provider) {
+        db.providers.remove(provider);
+    }
+
+    public void setCurrentProvider(Provider provider) {
+        db.currentProvider = provider;
+    }
+
+    public Provider getCurrentProvider() {
+        return db.currentProvider;
+    }
+
+    // ---------------------------- Storage Orders
+    public ArrayList<StorageOrder> getAllStorageOrders() {
+        return db.storageOrders;
+    }
+
+    public ArrayList<StorageOrder> getReadyOrders() {
+        ArrayList<StorageOrder> readyOrders = new ArrayList<>();
+        for (StorageOrder order: getAllStorageOrders()) {
+            if (order.getStatus() == OrderStatus.WAITING_TO_ACCEPT){
+                readyOrders.add(order);
+            }
         }
+        return readyOrders;
+    }
+
+    public void updateOrderStatuses(){
+        for (StorageOrder order: getAllStorageOrders()) {
+            if (order.getStatus() == OrderStatus.BEING_DELIVERED){
+                if (Objects.equals(order.getDeliveryDate(), Utils.getCurrentDate())){
+                    order.setStatus(OrderStatus.WAITING_TO_ACCEPT);
+                }
+            }
+        }
+    }
+
+    // TODO доработать наверное
+    public void addToStorageOrders(StorageOrder storageOrder) {
+        db.storageOrders.add(storageOrder);
+    }
+
+    public void removeFromStorageOrder(StorageOrder storageOrder) {
+        db.storageOrders.remove(storageOrder);
     }
 
 }

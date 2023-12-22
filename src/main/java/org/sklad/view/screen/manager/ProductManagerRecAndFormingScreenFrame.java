@@ -3,7 +3,9 @@ package org.sklad.view.screen.manager;
 import org.sklad.model.ClientOrder;
 import org.sklad.model.OrderStatus;
 import org.sklad.model.Product;
+import org.sklad.model.StorageOrder;
 import org.sklad.repository.ManagerRepo;
+import org.sklad.repository.ProductRepo;
 import org.sklad.util.Toast;
 
 import javax.swing.*;
@@ -27,11 +29,15 @@ public class ProductManagerRecAndFormingScreenFrame {
     private Font anotherFont = new Font("Verdana", Font.BOLD, 12);
     private Font titleFont = new Font("Verdana", Font.BOLD, 16);
     private ManagerRepo managerRepo;
+    private ProductRepo productRepo;
     private ArrayList<ClientOrder> formedOrders;
+    private ArrayList<StorageOrder> readyOrders;
 
     public ProductManagerRecAndFormingScreenFrame(){
         managerRepo = new ManagerRepo();
+        productRepo = new ProductRepo();
         formedOrders = managerRepo.getOrdersBy(true);
+        readyOrders = managerRepo.getReadyOrders();
         createElements();
         compose();
     }
@@ -116,6 +122,7 @@ public class ProductManagerRecAndFormingScreenFrame {
             return panel;
         }
 
+        // TODO------------------------------------------------------------------------//
         private class RecievingProvidersOrdersPanel{
 
             private JPanel panel = null;
@@ -138,16 +145,14 @@ public class ProductManagerRecAndFormingScreenFrame {
                 titleOfPanelLabel.setFont(titleFont);
 
                 updatePanelButton = new JButton("Update");
-                updatePanelButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e){
-                        updatePanelButtonFunction();
-                    }
-                });
+                updatePanelButton.addActionListener(e -> updatePanelButtonFunction());
 
                 JPanel panel1 = new JPanel();
-                for(int i = 0; i < 3; i++){
-                    panel1.add(new ProviderPackagePanel().getPanel());
+
+                for (StorageOrder order: readyOrders){
+                    panel1.add(new ProviderPackagePanel(order).getPanel());
                 }
+
                 GridLayout gridLayout = new GridLayout(0, 2, 10, 10);
                 panel1.setLayout(gridLayout);
 
@@ -189,7 +194,9 @@ public class ProductManagerRecAndFormingScreenFrame {
             }
 
             private void updatePanelButtonFunction(){
-
+                managerRepo.updateOrderStatuses();
+                frame.dispose();
+                new ProductManagerRecAndFormingScreenFrame();
             }
 
             private class ProviderPackagePanel{
@@ -203,21 +210,64 @@ public class ProductManagerRecAndFormingScreenFrame {
 
                 private JButton recieveDeliveryButton = null;
 
-                public ProviderPackagePanel(){
-                    createElements();
+//                public ProviderPackagePanel(){
+//                    createElements();
+//                    compose();
+//                }
+
+                public ProviderPackagePanel(StorageOrder order){
+                    createElements(order);
                     compose();
                 }
 
-                private void createElements(){
+//                private void createElements(){
+//                    panel = new JPanel();
+//                    panel.setPreferredSize(new Dimension(300, 230));
+//                    panel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 3));
+//
+//                    providerNameLabel = new JLabel("Chingiz");
+//                    providerNameLabel.setFont(anotherFont);
+//                    messageLabel = new JLabel(" delivered order# ");
+//
+//                    storageOrderIdLabel = new JLabel("z000");
+//                    storageOrderIdLabel.setFont(anotherFont);
+//
+//                    JPanel panel1 = new JPanel();
+//                    panel1.setLayout(new BoxLayout(panel1, BoxLayout.Y_AXIS));
+//
+////                    for(int i = 0; i < 4; i++){
+////                        panel1.add(new ProductInPackage().getPanel());
+////                        panel1.add(Box.createVerticalStrut(10));
+////                    }
+//
+//                    JScrollPane scrollPane = new JScrollPane(panel1);
+//                    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+//                    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+//
+//                    productsPanel = new JPanel();
+//                    productsPanel.setPreferredSize(new Dimension(330, 150));
+//                    productsPanel.setLayout(new BorderLayout());
+//                    productsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
+//                    productsPanel.add(scrollPane);
+//
+//                    recieveDeliveryButton = new JButton("Receive delivery");
+//                    recieveDeliveryButton.addActionListener(new ActionListener() {
+//                        public void actionPerformed(ActionEvent e){
+//                            receiveDeliveryButtonFunction();
+//                        }
+//                    });
+//                }
+
+                private void createElements(StorageOrder order){
                     panel = new JPanel();
                     panel.setPreferredSize(new Dimension(300, 230));
                     panel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 3));
 
-                    providerNameLabel = new JLabel("Chingiz");
+                    providerNameLabel = new JLabel(order.getProviderName());
                     providerNameLabel.setFont(anotherFont);
                     messageLabel = new JLabel(" delivered order# ");
 
-                    storageOrderIdLabel = new JLabel("z000");
+                    storageOrderIdLabel = new JLabel("" + order.getId());
                     storageOrderIdLabel.setFont(anotherFont);
 
                     JPanel panel1 = new JPanel();
@@ -228,7 +278,10 @@ public class ProductManagerRecAndFormingScreenFrame {
 //                        panel1.add(Box.createVerticalStrut(10));
 //                    }
 
-
+                    for (Product product: order.getProducts()) {
+                        panel1.add(new ProductInPackage(product).getPanel());
+                        panel1.add(Box.createVerticalStrut(10));
+                    }
 
                     JScrollPane scrollPane = new JScrollPane(panel1);
                     scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -243,7 +296,7 @@ public class ProductManagerRecAndFormingScreenFrame {
                     recieveDeliveryButton = new JButton("Receive delivery");
                     recieveDeliveryButton.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent e){
-                            receiveDeliveryButtonFunction();
+                            receiveDeliveryButtonFunction(order);
                         }
                     });
                 }
@@ -286,8 +339,14 @@ public class ProductManagerRecAndFormingScreenFrame {
                     return panel;
                 }
 
-                private void receiveDeliveryButtonFunction(){
-
+                private void receiveDeliveryButtonFunction(StorageOrder order){
+                    for (Product product: order.getProducts()) {
+                        productRepo.addProduct(product);
+                    }
+                    order.setStatus(OrderStatus.DELIVERED);
+                    Toast.show("Products Added to Warehouse");
+                    frame.dispose();
+                    new ProductManagerRecAndFormingScreenFrame();
                 }
             }
         }

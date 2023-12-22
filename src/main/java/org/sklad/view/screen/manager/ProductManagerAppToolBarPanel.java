@@ -1,6 +1,9 @@
 package org.sklad.view.screen.manager;
 
+import org.sklad.model.Provider;
+import org.sklad.repository.ManagerRepo;
 import org.sklad.view.screen.ChoosingRoleFrame;
+import org.sklad.view.screen.manager.addproduct.ProductManagerStorageOrdersScreenFrame;
 
 import static javax.swing.GroupLayout.Alignment.*;
 import javax.swing.*;
@@ -11,7 +14,6 @@ import java.awt.event.ActionListener;
 public class ProductManagerAppToolBarPanel {
 
     private JFrame frame = null;
-
     private JPanel toolBarPanel = null;
     private final int WIDTH = 750;
     private final int HEIGHT = 50;
@@ -27,9 +29,11 @@ public class ProductManagerAppToolBarPanel {
     private JButton providersScreeButton = null;
     private JButton catalogEditorButton = null;
     private JButton exiButton = null;
+    ManagerRepo repo = new ManagerRepo();
 
     public ProductManagerAppToolBarPanel(JFrame frame){
         this.frame = frame;
+
 
         // Создание элементов панели
         toolBarPanel = new JPanel();
@@ -53,7 +57,7 @@ public class ProductManagerAppToolBarPanel {
         recieveAndFormingScreenButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                recieveAndFormingScreenButtonFunction();
+                receiveAndFormingScreenButtonFunction();
             }
         });
 
@@ -119,13 +123,15 @@ public class ProductManagerAppToolBarPanel {
 
     private void clientsOrdersScreenButtonFunction(){
         if(!(frame.getTitle().equals("Clients orders"))){
+            repo.setCurrentProvider(null);
             frame.dispose();
             new ProductManagerOrdersScreenFrame();
         }
     }
 
-    private void recieveAndFormingScreenButtonFunction(){
+    private void receiveAndFormingScreenButtonFunction(){
         if(!(frame.getTitle().equals("Recieving and Forming Packages"))){
+            repo.setCurrentProvider(null);
             frame.dispose();
             new ProductManagerRecAndFormingScreenFrame();
         }
@@ -139,6 +145,7 @@ public class ProductManagerAppToolBarPanel {
     }
 
     private void providersScreeButtonFunction(){
+        repo.setCurrentProvider(null);
         if(!(frame.getTitle().equals("Providers"))){
             frame.dispose();
             new ProductManagerProvidersScreenFrame();
@@ -146,6 +153,7 @@ public class ProductManagerAppToolBarPanel {
     }
 
     private void catalogEditorButtonFunction(){
+        repo.setCurrentProvider(null);
         if(!(frame.getTitle().equals("Catalog Editor"))){
             frame.dispose();
             new ProductManagerCatalogEditorScreenFrame();
@@ -153,6 +161,7 @@ public class ProductManagerAppToolBarPanel {
     }
 
     private void exiButtonFunction(){
+        repo.setCurrentProvider(null);
         frame.dispose();
         new ChoosingRoleFrame();
     }
