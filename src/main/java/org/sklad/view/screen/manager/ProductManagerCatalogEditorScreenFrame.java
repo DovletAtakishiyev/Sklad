@@ -1,6 +1,7 @@
 package org.sklad.view.screen.manager;
 
 import org.sklad.model.Product;
+import org.sklad.model.SerialImage;
 import org.sklad.repository.ProductRepo;
 import org.sklad.util.Utils;
 

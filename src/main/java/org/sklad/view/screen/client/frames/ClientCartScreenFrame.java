@@ -358,14 +358,18 @@ public class ClientCartScreenFrame {
 
             // Image
             productImageLabel = new JLabel();                                   // Image Url
-            try {
-                URL imageURL = new URL(product.imageUrl);
-                ImageIcon icon = new ImageIcon(Utils.resizeImage(imageURL));
-                productImageLabel.setIcon(icon);
-            } catch (Exception e) {
-                Image image = Toolkit.getDefaultToolkit().createImage("Images/imagePlaceHolder.png");
-                productImageLabel.setIcon(new ImageIcon(image.getScaledInstance(75, 75, Image.SCALE_SMOOTH)));
-                System.out.println("Проблема с картинкой");
+            if (product.image == null) {
+                try {
+                    URL imageURL = new URL(product.imageUrl);
+                    ImageIcon icon = new ImageIcon(Utils.resizeImage(imageURL));
+                    productImageLabel.setIcon(icon);
+                } catch (Exception e) {
+                    Image image = Toolkit.getDefaultToolkit().createImage("Images/imagePlaceHolder.png");
+                    productImageLabel.setIcon(new ImageIcon(image.getScaledInstance(75, 75, Image.SCALE_SMOOTH)));
+                    System.out.println("Проблема с картинкой");
+                }
+            } else {
+                productImageLabel.setIcon(new ImageIcon(product.image.getScaledInstance(75, 75, Image.SCALE_SMOOTH)));
             }
             productImageLabel.setPreferredSize(new Dimension(75, 75));
 

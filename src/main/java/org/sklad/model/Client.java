@@ -1,9 +1,10 @@
 package org.sklad.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Client {
+public class Client implements Serializable {
 
     public int id;
     public String name;

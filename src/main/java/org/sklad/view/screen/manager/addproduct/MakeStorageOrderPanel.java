@@ -319,7 +319,7 @@ class MakeStorageOrderPanel {
                 currentProduct.id = Integer.parseInt(productIdValueLabel.getText());
                 currentProduct.name = productNameValueLabel.getText();
                 currentProduct.pricePerPiece = Double.parseDouble(productPricePerPieceValueLabel.getText());
-
+                currentProduct.description = repository.findDescriptionById(currentProduct.id);
             });
             // todo(Вот это говно переработать) -------//-------//-------//-------//-------//-------//-------//-------//
 

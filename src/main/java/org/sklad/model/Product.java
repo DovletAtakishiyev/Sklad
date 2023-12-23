@@ -1,8 +1,9 @@
 package org.sklad.model;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Product {
+public class Product implements Serializable {
 
 	public int id;
 	public String name;
@@ -10,7 +11,7 @@ public class Product {
 	public int availableAmount;
 	public double pricePerPiece;
 	public String imageUrl;
-	public Image image;
+	public transient Image image;
 	public boolean visible = false;
 	private static int counter = 0;
 
@@ -49,6 +50,7 @@ public class Product {
 		this.description = product.description;
 		this.pricePerPiece = product.pricePerPiece;
 		this.imageUrl = product.imageUrl;
+		this.image = product.image;
 	}
 
 	public Product(Product product, int availableAmount){

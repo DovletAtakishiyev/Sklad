@@ -87,6 +87,13 @@ public class ManagerRepo {
         return db.currentProvider;
     }
 
+    public String findDescriptionById(int id){
+        for (Product product: getCurrentProvider().getProducts())
+            if (product.id == id)
+                return product.description;
+        return "";
+    }
+
     // ---------------------------- Storage Orders
     public ArrayList<StorageOrder> getAllStorageOrders() {
         return db.storageOrders;

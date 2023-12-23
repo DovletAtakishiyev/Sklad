@@ -1,8 +1,9 @@
 package org.sklad.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class StorageOrder {
+public class StorageOrder implements Serializable {
     private int id;
     private int providerId;
     private String providerName;

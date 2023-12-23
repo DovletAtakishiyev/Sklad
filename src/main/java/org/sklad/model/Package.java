@@ -1,6 +1,8 @@
 package org.sklad.model;
 
-public class Package {
+import java.io.Serializable;
+
+public class Package implements Serializable {
 
     private ClientOrder packageClientOrder = null;
     private String clientAddress = null;
